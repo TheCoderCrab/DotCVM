@@ -1,0 +1,28 @@
+CONFIG -= qt
+
+TEMPLATE = lib
+DEFINES += DOTCVM_LIBRARY
+
+CONFIG += c++20
+
+DEFINES += QT_DEPRECATED_WARNINGS
+
+SOURCES += \
+    jinterface/app_main.cpp \
+    main.cpp
+
+HEADERS += \
+    app_main.h \
+    j_app_main.h \
+    main.h
+
+INCLUDEPATH += $$(JAVA_HOME)/include
+INCLUDEPATH += $$(JAVA_HOME)/include/linux
+
+unix {
+    target.path = /usr/lib
+}
+!isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    AppMain.java
