@@ -2,6 +2,7 @@
 import java.awt.Graphics;
 
 import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
@@ -23,6 +24,7 @@ class AppMain
 
     private static native int _init();
     private static native void _run(String[] args);
+    private static native void _update();
     private static native void _exit();
 
     public static void main(String[] args)
@@ -47,7 +49,15 @@ class AppMain
         {
             scr = new Screen(WIDTH, HEIGHT);
             win = createWindow(WIDTH, HEIGHT);
-            _run(args); // Jump to native code
+            _run(args); // Start native code
+            while(win.isVisible())
+                _update();
+            win.setTitle("Wait while Shutting down the machine");
+            win.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            win.setVisible(true);
+            _exit();
+            win.setVisible(false);
+            System.exit(0);
         }
     }
 
@@ -72,15 +82,8 @@ class AppMain
         frame.setTitle("DotC VirtualMachine");
         frame.setResizable(false);
         frame.setSize(width, height);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         frame.setLocationRelativeTo(null);
-        frame.addWindowListener(new WindowAdapter() 
-        {
-            public void windowClosing(WindowEvent e) {
-                _exit();
-                System.exit(0);
-            }
-        });
         frame.setVisible(true);
 
         frame.setContentPane(new JPanel()

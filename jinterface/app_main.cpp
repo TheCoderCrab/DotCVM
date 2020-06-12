@@ -37,14 +37,19 @@ JNIEXPORT jint JNICALL Java_AppMain__1init(JNIEnv * env, jclass clazz) // Native
     return 0;
 }
 
-JNIEXPORT void JNICALL Java_AppMain__1run(JNIEnv* env, jclass clazz, jobjectArray args) // Native code entry point
+JNIEXPORT void JNICALL Java_AppMain__1run(JNIEnv*, jclass, jobjectArray) // Native code run
 {
-    cmain(); // Calling the real entry point
+    cmain(); // Calling the real main
 }
 
-JNIEXPORT void JNICALL Java_AppMain__1exit(JNIEnv * env, jclass lazz)
+JNIEXPORT void JNICALL Java_AppMain__1update(JNIEnv *, jclass)
 {
-    exit(); // Calling the real exit function
+    update(); // Calling the real update
+}
+
+JNIEXPORT void JNICALL Java_AppMain__1exit(JNIEnv*, jclass)
+{
+    exit(); // Calling the real exit
 }
   
 

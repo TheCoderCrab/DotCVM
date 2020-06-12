@@ -16,21 +16,32 @@ extern "C" {
  * Method:    _init
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_AppMain__1init(JNIEnv *, jclass);
+JNIEXPORT jint JNICALL Java_AppMain__1init
+  (JNIEnv *, jclass);
 
 /*
  * Class:     AppMain
  * Method:    _run
  * Signature: ([Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_AppMain__1run(JNIEnv *, jclass, jobjectArray);
+JNIEXPORT void JNICALL Java_AppMain__1run
+  (JNIEnv *, jclass, jobjectArray);
+
+/*
+ * Class:     AppMain
+ * Method:    _update
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_AppMain__1update
+  (JNIEnv *, jclass);
 
 /*
  * Class:     AppMain
  * Method:    _exit
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_AppMain__1exit(JNIEnv *, jclass);
+JNIEXPORT void JNICALL Java_AppMain__1exit
+  (JNIEnv *, jclass);
 
 #ifdef __cplusplus
 }
