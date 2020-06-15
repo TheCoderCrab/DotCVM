@@ -19,7 +19,8 @@ HEADERS += \
     file_utils.h \
     j_app_main.h \
     log.h \
-    main.h
+    main.h \
+    maths.h
 
 INCLUDEPATH += $$(JAVA_HOME)/include
 INCLUDEPATH += $$(JAVA_HOME)/include/linux

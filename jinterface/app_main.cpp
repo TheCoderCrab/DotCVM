@@ -3,8 +3,10 @@
 #include <app_main.h>
 #include <iostream>
 #include <main.h>
+#include <log.h>
 
 static jmethodID s_SetPixelMethod;
+static jmethodID s_GetPixelMethod;
 static jmethodID s_RefreshScrMethod;
 static jmethodID s_RequestCloseMethod;
 static JNIEnv* s_JEnv;
@@ -15,21 +17,27 @@ JNIEXPORT jint JNICALL Java_AppMain__1init(JNIEnv * env, jclass clazz) // Native
     s_SetPixelMethod = env->GetStaticMethodID(clazz, "setPixel", "(III)V");
     s_RefreshScrMethod = env->GetStaticMethodID(clazz, "refreshScr", "()V");
     s_RequestCloseMethod = env->GetStaticMethodID(clazz, "requestClose", "()V");
+    s_GetPixelMethod = env->GetStaticMethodID(clazz, "getPixel", "(II)I");
 
     if(s_SetPixelMethod == nullptr) // setPixel(III)V not found
     {
         std::cout << "setPixel(III)V not found" << std::endl;
         return 1;
     }
-    if(s_RefreshScrMethod == nullptr)
+    if(s_RefreshScrMethod == nullptr) // refreshScr()V not found
     {
         std::cout << "refreshScr()V not found" << std::endl;
         return 2;
     }
-    if(s_RequestCloseMethod == nullptr)
+    if(s_RequestCloseMethod == nullptr) // requestClose()V not found
     {
         std::cout << "requestClose()V not found" << std::endl;
         return 3;
+    }
+    if(s_GetPixelMethod == nullptr) // getPixel(II)I not found
+    {
+        std::cout << "getPixel(II)I not found" << std::endl;
+        return 4;
     }
 
     s_JEnv = env;
@@ -56,6 +64,11 @@ JNIEXPORT void JNICALL Java_AppMain__1exit(JNIEnv*, jclass)
 void setPixel(int x, int y, int color)
 {
     s_JEnv->CallStaticVoidMethod(s_AppMainclass, s_SetPixelMethod, x, y, color);
+}
+
+int getPixel(int x, int y)
+{
+    return s_JEnv->CallStaticIntMethod(s_AppMainclass, s_GetPixelMethod, x, y);
 }
 
 void refreshScr()

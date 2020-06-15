@@ -12,6 +12,7 @@ void cmain()
 
 void update()
 {
+    debug("Updating");
     devices::update();
 }
 

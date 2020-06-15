@@ -45,6 +45,11 @@ class AppMain
             System.out.println("Native code couldn't find requestClose()V");
             System.exit(3);
         }
+        else if(errCode == 4) // getPixel Method not found
+        {
+            System.out.println("Native code couldn't find getPixel(II)I");
+            System.exit(4);
+        }
         else    // Everything's okay.
         {
             scr = new Screen(WIDTH, HEIGHT);
@@ -64,6 +69,11 @@ class AppMain
     public static void setPixel(int x, int y, int color)
     {
         scr.setPixel(x, y, color);
+    }
+
+    public static int getPixel(int x, int y)
+    {
+        return scr.getPixel(x, y);
     }
 
     public static void refreshScr()
@@ -117,6 +127,11 @@ class AppMain
         public void setPixel(int x, int y, int color)
         {
             pixels[x][y] = color;
+        }
+
+        public int getPixel(int x, int y)
+        {
+            return pixels[x][y];
         }
 
         public void refresh(Graphics g)

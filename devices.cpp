@@ -15,8 +15,11 @@ namespace devices
     }
     void update()
     {
+        debug("mem update");
         mem->update();
+        debug("drive update");
         drive->update();
+        debug("scr update");
         scr->update();
     }
 
@@ -26,6 +29,10 @@ namespace devices
         drive->exit();
         mem->exit();
         scr->exit();
+        delete mem;
+        delete drive;
+        delete scr;
+
     }
 
 }

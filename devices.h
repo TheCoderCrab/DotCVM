@@ -5,12 +5,16 @@
 #include <file_utils.h>
 #include <fstream>
 #include <app_main.h>
+#include <optional>
+#include <maths.h>
 
 #define DISK_FILE   "disk.dat"
 #define MEM_SIZE    50 * 1024 * 1024
 #define DISK_SIZE   (100 * 1024 * 1024) / 512
 
 #define SCR_BUFFER  0xA0000
+#define SCR_WIDTH       720
+#define SCR_HEIGHT      480
 
 class Device
 {
@@ -22,6 +26,10 @@ public:
 class IODevice : public Device
 {
 public:
+    virtual ~IODevice()
+    {
+
+    }
     virtual void ioUpdate(unsigned int ioLineData) = 0;
 };
 
@@ -31,13 +39,14 @@ protected:
     unsigned int m_Size;
     T* m_Data;
 public:
-    ~DataDevice()
+    virtual ~DataDevice()
     {
+        debug("Destructing DATA DEVICE");
         delete [] m_Data;
     }
-    T* at(unsigned int address)
+    T& operator[](unsigned int address)
     {
-        return &m_Data[address];
+        return m_Data[address];
     }
 };
 
@@ -123,12 +132,24 @@ public:
 
 class Screen : public IODevice
 {
-private:
+    public:
     unsigned int* m_ScrBuffer;
 public:
     Screen(Memory* mem)
     {
-        m_ScrBuffer = (unsigned int*) mem->at(SCR_BUFFER);
+        m_ScrBuffer = (unsigned int*) &((*mem)[SCR_BUFFER]);
+    }
+    std::optional<Vector2> hasChanged()
+    {
+        for(unsigned int x = 0; x < SCR_WIDTH; x++)
+            for(unsigned int y = 0; y < SCR_HEIGHT; y++)
+                if(m_ScrBuffer[x + y * SCR_WIDTH] != (unsigned int) getPixel(x, y))
+                    return Vector2{(int) x, (int) y};
+        return {};
+    }
+    void setPixelAt(unsigned int x, unsigned int y, unsigned int color)
+    {
+        m_ScrBuffer[x + y * SCR_WIDTH] = color;
     }
     virtual void ioUpdate(unsigned int ioLineData) override
     {
@@ -136,14 +157,20 @@ public:
     }
     virtual void update() override
     {
-        for(unsigned int x = 0; x < 720; x++)
-            for(int y = 0; y < 480; y++)
-                setPixel(x, y, m_ScrBuffer[x + y * 720]);
-        refreshScr();
+        std::optional<Vector2> updateData = hasChanged();
+        if(updateData)
+        {
+
+            debug("refreshing screen");
+            for(unsigned int x = updateData->x; x < SCR_WIDTH; x++)
+                for(int y = updateData->y; y < SCR_HEIGHT; y++)
+                    setPixel(x, y, (int) m_ScrBuffer[x + y * SCR_WIDTH]);
+            refreshScr();
+        }
+
     }
     virtual void exit() override
     {
-
     }
 };
 
