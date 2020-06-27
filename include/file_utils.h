@@ -1,12 +1,14 @@
 #ifndef FILE_UTILS_H
 #define FILE_UTILS_H
 
+#include <stdint.h>
+
 namespace fs
 {
     struct FileData
     {
-        unsigned char* dataPtr;
-        unsigned int size;
+        uint8_t* dataPtr;
+        uint32_t size;
         ~FileData()
         {
             delete []  dataPtr;
@@ -14,8 +16,8 @@ namespace fs
     };
     void deleteFile(const char* fileName);
     bool exists(const char* filename);
-    void createFile(const char* name, unsigned int size);
-    void createIfNotExist(const char* name, unsigned int size);
+    void createFile(const char* name, uint32_t size);
+    void createIfNotExist(const char* name, uint32_t size);
     unsigned int fileSize(const char* filename);
     FileData readFile(const char* name);
 }

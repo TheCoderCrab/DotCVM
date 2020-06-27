@@ -61,12 +61,12 @@ JNIEXPORT void JNICALL Java_AppMain__1exit(JNIEnv*, jclass)
 }
   
 
-void setPixel(int x, int y, int color)
+void setPixel(int32_t x, int32_t y, int32_t color)
 {
     s_JEnv->CallStaticVoidMethod(s_AppMainclass, s_SetPixelMethod, x, y, color);
 }
 
-int getPixel(int x, int y)
+int32_t getPixel(int32_t x, int32_t y)
 {
     return s_JEnv->CallStaticIntMethod(s_AppMainclass, s_GetPixelMethod, x, y);
 }

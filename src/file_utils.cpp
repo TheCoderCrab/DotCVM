@@ -17,20 +17,20 @@ namespace fs
         remove(fileName);
     }
 
-    void createFile(const char* name, unsigned int size)
+    void createFile(const char* name, uint32_t size)
     {
         if(!exists(name))
         {
             std::ofstream diskFileCreate(name, std::ios::out | std::ios::binary);
             diskFileCreate.seekp(size - 1);
-            diskFileCreate << (char) 0;
+            diskFileCreate << (int8_t) 0;
             diskFileCreate.close();
         }
         else
             std::cout << "Can't create an already existing file! " << name << std::endl;
     }
 
-    void createIfNotExist(const char* name, unsigned int size)
+    void createIfNotExist(const char* name, uint32_t size)
     {
         if(!exists(name))
             createFile(name, size);
@@ -46,7 +46,7 @@ namespace fs
         FileData data;
         data.size = fileSize(name);
         std::ifstream file(name, std::ios::in | std::ifstream::binary);
-        data.dataPtr = new unsigned char[data.size];
+        data.dataPtr = new uint8_t[data.size];
         file.read((char*) data.dataPtr, data.size);
         return data;
     }
