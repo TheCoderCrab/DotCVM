@@ -4,10 +4,9 @@
 
 #define log(x) std::cout << x << std::endl
 
-#ifdef QT_QML_DEBUG
+#ifdef DEBUG
 #define debug(x) std::cout << "DEBUG: " << x << '\n';
-#endif
-#ifndef QT_QML_DEBUG
+#else
 #define debug(x)
 #endif
 
