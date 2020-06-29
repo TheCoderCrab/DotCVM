@@ -1,15 +1,15 @@
 #include <file_utils.h>
-#include <sys/stat.h>
-#include <iostream>
-#include <fstream>
+#include <log.h>
 #include <stdio.h>
+#include <unistd.h>
+
+
 
 namespace fs
 {
     bool exists(const char* filename)
     {
-        struct stat buffer;
-        return (stat(filename, &buffer) == 0);
+        return access(filename, F_OK) != -1;
     }
 
     void deleteFile(const char* fileName)
@@ -21,13 +21,13 @@ namespace fs
     {
         if(!exists(name))
         {
-            std::ofstream diskFileCreate(name, std::ios::out | std::ios::binary);
-            diskFileCreate.seekp(size - 1);
-            diskFileCreate << (int8_t) 0;
-            diskFileCreate.close();
+            FILE* file = fopen("myfile", "w");
+            fseek(file, size, SEEK_SET);
+            fputc('\0', file);
+            fclose(file);
         }
         else
-            std::cout << "Can't create an already existing file! " << name << std::endl;
+            debug("Can't create an already existing file! " << name);
     }
 
     void createIfNotExist(const char* name, uint32_t size)
@@ -38,16 +38,20 @@ namespace fs
 
     unsigned int fileSize(const char* filename)
     {
-        std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
-        return in.tellg();
+        FILE* file = fopen(filename, "rb");
+        fseek(file, 0, SEEK_END);
+        unsigned int size = ftell(file);
+        fclose(file);
+        return size;
     }
     FileData readFile(const char* name)
     {
         FileData data;
         data.size = fileSize(name);
-        std::ifstream file(name, std::ios::in | std::ifstream::binary);
+        FILE* file = fopen(name, "rb");
         data.dataPtr = new uint8_t[data.size];
-        file.read((char*) data.dataPtr, data.size);
+        fread(data.dataPtr, 1, data.size, file);
+        fclose(file);
         return data;
     }
 }
