@@ -1,5 +1,6 @@
 //This file should only be included through devices.h, otherwise compile errors.
 #ifdef CPU_H
+
 #error cpu.h sould only be included from devices, use '#include <devices.h>' instead.
 #endif
 
@@ -76,6 +77,10 @@ private:
     Reg32     b;
     Reg32     c;
     Reg32     d;
+    Reg32     r; // Result
+    Reg32     f; // Flags
+    Reg32     t; // Temporary register
+    Reg32     u; // Temporary register
 
 
     // Memory management: 1X0XH
@@ -107,6 +112,7 @@ private:
     Reg32    fb;
     Reg32    fc;
     Reg32    fd;
+    Reg32    fr; // Result
 
 
     // Security: 6X0XH
