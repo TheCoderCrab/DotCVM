@@ -1,4 +1,5 @@
 #!/bin/sh
 
-rm -r build/
-mkdir build/
+# Expects to be executed from build dir
+
+rm *.class *.log

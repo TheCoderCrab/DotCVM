@@ -1,14 +1,16 @@
 #ifndef DEVICES_H
 #define DEVICES_H
 
-#include        <log.h>
-#include <file_utils.h>
-#include      <fstream>
+#include   <log.h>
+#include   <file_utils.h>
+#include   <fstream>
 #include   <app_main.h>
-#include     <optional>
-#include      <maths.h>
-#include      <stdio.h>
-
+#include   <optional>
+#include   <maths.h>
+#include   <stdio.h>
+#include   <utils.h>
+#include   <stdint.h>
+#include   <dctypes.h>
 
 #define BLOCK_SIZE      512
 #define DISK_FILE       "disk.dat"
@@ -30,31 +32,35 @@ class IODevice : public Device
 {
 public:
     virtual ~IODevice() {}
-    virtual void ioUpdate(uint32_t ioLineData) = 0;
+    virtual void ioUpdate(byte ioLineData) = 0;
 };
 
 class Memory : public Device
 {
 private:
-    uint32_t m_Size;
-    uint8_t* m_Data;
+    dword m_Size;
+    data* m_Data;
 public:
     Memory(uint32_t size)
     {
         m_Size = size;
-        m_Data = new uint8_t[m_Size];
+        m_Data = new data[m_Size];
         for(uint32_t i = 0; i < m_Size; i++)
             m_Data[i] = 0;
     }
-    ~Memory()
+    virtual ~Memory()
     {
         delete [] m_Data;
     }
-    uint8_t& operator[](uint32_t address)
+    template<typename T> T& at(address adr)
     {
-        return m_Data[address];
+        return (T&)(m_Data[adr]);
     }
-    uint32_t size() { return m_Size; }
+    byte& operator[](address adr)
+    {
+        return at<byte>(adr);
+    }
+    dword size() { return m_Size; }
     void update() override {}
     void exit() override {}
 };
@@ -64,13 +70,14 @@ class Drive : public IODevice
 private:
     FILE* m_DiskFile;
 public:
-    Drive(uint32_t sizeIfNotPresentInBlocks)
+    Drive(dword sizeIfNotPresentInBlocks)
     {
         fs::createIfNotExist(DISK_FILE, sizeIfNotPresentInBlocks * 512);
         m_DiskFile = fopen(DISK_FILE, "rb+");
         if(m_DiskFile == nullptr)
         {
             log("unable to open disk file!");
+            debug("disk file: " << DISK_FILE);
             requestClose();
         }
         debug("Opened disk file successfully");
@@ -79,13 +86,13 @@ public:
     {
         fclose(m_DiskFile);
     }
-    void ioUpdate(uint32_t ioLineData) override
+    void ioUpdate(byte ioLineData) override
     {
         debug(ioLineData);
     }
     void update() override {}
     void exit() override {}
-    void loadBlock(uint32_t blockAddress, uint32_t blockCount, Memory* mem, uint32_t memAddress)
+    void loadBlock(address blockAddress, dword blockCount, Memory* mem, address memAddress)
     {
         debug("Reading block at: " << blockAddress << ", count: " << blockCount << ", to address: " << memAddress);
         if(fseek(m_DiskFile, blockAddress * 512, SEEK_SET) != 0)
@@ -112,11 +119,11 @@ public:
 class Screen : public IODevice
 {
 private:
-    uint32_t* m_ScrBuffer;
+    dword* m_ScrBuffer;
 public:
     Screen(Memory* mem)
     {
-        m_ScrBuffer = (uint32_t*) &((*mem)[SCR_BUFFER]);
+        m_ScrBuffer = &(mem->at<dword>(SCR_BUFFER));
     }
     std::optional<Vector2> hasChanged()
     {
@@ -126,11 +133,11 @@ public:
                     return Vector2{(int32_t) x, (int32_t) y};
         return {};
     }
-    void setPixelAt(uint32_t x, uint32_t y, uint32_t color)
+    void setPixelAt(dword x, dword y, dword color)
     {
         m_ScrBuffer[x + y * SCR_WIDTH] = color;
     }
-    virtual void ioUpdate(uint32_t ioLineData) override
+    virtual void ioUpdate(byte ioLineData) override
     {
         debug(ioLineData);
     }
@@ -153,13 +160,14 @@ public:
     }
 };
 
+// This is to prevent include loops and IDE complaining about classes not defined
 #define CPU_INCLUDE_ERRORS_PROTECTION // Remove this line and you'll find hell waiting for you. Look at cpu.h for more info
 #include <cpu.h> // This sould stay after all the devices definitions. Really.
 
 namespace devices
 {
     extern CPU* cpu;
-    void init(uint32_t memSize, uint32_t diskSizeIfNotPresentInBlocks);
+    void init(dword memSize, dword diskSizeIfNotPresentInBlocks);
     void update();
     void exit();
 }

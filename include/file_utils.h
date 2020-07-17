@@ -1,13 +1,13 @@
 #ifndef FILE_UTILS_H
 #define FILE_UTILS_H
 
-#include <stdint.h>
+#include <dctypes.h>
 
 namespace fs
 {
     struct FileData
     {
-        uint8_t* dataPtr;
+        data* dataPtr;
         uint32_t size;
         ~FileData()
         {

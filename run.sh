@@ -1,6 +1,5 @@
 #!/bin/sh
 
-./build.sh 1 #Builds with debug
+# Expects to be executed from build dir
 
-cd build
 java -Djava.library.path=. -cp . AppMain

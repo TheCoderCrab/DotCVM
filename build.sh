@@ -1,18 +1,18 @@
 #!/bin/sh
 
-javac src/*.java -d build
+# Expects to be executed from build dir
+# $1 = main dir
+# $2 = debug mode
 
-cd build
+javac $1/src/*.java -d . 
+
 javah AppMain
-cd ..
 
-mv build/AppMain.h include/j_app_main.h
-[ -f build/AppMain_Screen.h ] && rm build/AppMain_Screen.h
+mv AppMain.h $1/include/j_app_main.h
+[ -f AppMain_Screen.h ] && rm AppMain_Screen.h
 
-cmake -B build -DDEBUG=$1
+cmake -S $1 -B . -DDEBUG=$2
 
-cd build
 make
-cd ..
 
 

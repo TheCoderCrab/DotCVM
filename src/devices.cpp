@@ -8,6 +8,7 @@ namespace devices
     {
         log("Initializing devices");
         Memory* mem = new Memory(memSize);
+        debug("Memory allocated");
         cpu = new CPU(mem, new Drive(diskSizeIfNotPresentInBlocks), new Screen(mem));
     }
     void update()

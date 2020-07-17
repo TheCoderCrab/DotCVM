@@ -14,6 +14,7 @@ void cmain()
 void update()
 {
     debug("Updating");
+    devices::cpu->set<uint32_t>(devices::cpu->mem().at<uint32_t>(SCR_BUFFER + 720*480*4 - 5), INT32_MAX);
     devices::update();
 }
 

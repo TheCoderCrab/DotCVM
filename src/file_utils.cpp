@@ -2,7 +2,8 @@
 #include <log.h>
 #include <stdio.h>
 #include <unistd.h>
-
+#include <app_main.h>
+#include <dctypes.h>
 
 
 namespace fs
@@ -21,7 +22,7 @@ namespace fs
     {
         if(!exists(name))
         {
-            FILE* file = fopen("myfile", "w");
+            FILE* file = fopen(name, "wb");
             fseek(file, size, SEEK_SET);
             fputc('\0', file);
             fclose(file);
@@ -36,22 +37,27 @@ namespace fs
             createFile(name, size);
     }
 
-    unsigned int fileSize(const char* filename)
+    uint32_t fileSize(const char* filename)
     {
-        FILE* file = fopen(filename, "rb");
+        if(!exists(filename))
+        {
+            debug("Can't request size of inexisting file!");
+            requestClose();
+        }
+        FILE* file = fopen(filename, "r");
         fseek(file, 0, SEEK_END);
-        unsigned int size = ftell(file);
+        uint32_t size = ftell(file);
         fclose(file);
         return size;
     }
     FileData readFile(const char* name)
     {
-        FileData data;
-        data.size = fileSize(name);
+        FileData fileData;
+        fileData.size = fileSize(name);
         FILE* file = fopen(name, "rb");
-        data.dataPtr = new uint8_t[data.size];
-        fread(data.dataPtr, 1, data.size, file);
+        fileData.dataPtr = new data[fileData.size];
+        fread(fileData.dataPtr, 1, fileData.size, file);
         fclose(file);
-        return data;
+        return fileData;
     }
 }
