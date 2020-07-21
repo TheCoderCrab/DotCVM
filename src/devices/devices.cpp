@@ -1,5 +1,5 @@
-#include <devices.h>
-#include <log.h>
+#include <DotCVM/devices/devices.h>
+#include <DotCVM/utils/log.h>
 
 namespace devices
 {

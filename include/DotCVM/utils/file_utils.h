@@ -1,7 +1,7 @@
 #ifndef FILE_UTILS_H
 #define FILE_UTILS_H
 
-#include <dctypes.h>
+#include <DotCVM/utils/types.h>
 
 namespace fs
 {

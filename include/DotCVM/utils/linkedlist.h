@@ -1,8 +1,7 @@
 #ifndef DC_LINKED_LIST_H
 #define DC_LINKED_LIST_H
 
-#include <stdint.h>
-#include <log.h>
+#include <DotCVM/utils/log.h>
 
 template<typename T> struct LinkedListElement
 {

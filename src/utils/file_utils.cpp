@@ -1,10 +1,10 @@
-#include <file_utils.h>
-#include <log.h>
+#include <DotCVM/utils/file_utils.h>
+#include <DotCVM/utils/log.h>
+#include <DotCVM/gui/window.h>
+#include <DotCVM/utils/types.h>
+#include <DotCVM//utils/err_code.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <app_main.h>
-#include <dctypes.h>
-#include <err_code.h>
 
 
 namespace fs

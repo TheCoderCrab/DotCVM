@@ -1,13 +1,10 @@
 #define DC_LINKED_LIST_USE_MALLOC // To use linked list with malloc instead of new, thus preventing infinite calls to operator new
 
-#include <stddef.h>
-#include <stdlib.h>
-#include <log.h>
-#include <dc_linkedlist.h>
+#include <DotCVM/gui/window.h>
+#include <DotCVM/utils/err_code.h>
+#include <DotCVM/utils/linkedlist.h>
 #include <signal.h>
-#include <stdio.h>
-#include <app_main.h>
-#include <err_code.h>
+
 
 #ifdef DEBUG
 

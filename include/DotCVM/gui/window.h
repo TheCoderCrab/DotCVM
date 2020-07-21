@@ -2,7 +2,6 @@
 #define WINDOW_H
 
 #include <X11/Xlib.h>
-#include <X11/Xutil.h>
 
 struct WindowData
 {
@@ -16,5 +15,8 @@ WindowData createWindow(const char* title, unsigned int width, unsigned int heig
 extern WindowData mainWin;
 
 #define XEventWaiting(d, t, e) XCheckTypedEvent(d, t, &e) != 0
+
+void refreshScr(WindowData window, uint* screenBuffer, bool force = false);
+void requestClose(int errCode, const char* msg);
 
 #endif

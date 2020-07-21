@@ -1,7 +1,5 @@
-#include <window.h>
-#include <log.h>
-#include <err_code.h>
-#include <app_main.h>
+#include <DotCVM/gui/window.h>
+#include <DotCVM/utils/err_code.h>
 
 WindowData createWindow(const char* title, unsigned int width, unsigned int height)
 {

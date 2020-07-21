@@ -1,16 +1,14 @@
 // TODO: separate window creation from this file
 // TODO: make window creation for other plateforms
 
-#include <log.h>
-#include <app_main.h>
-#include <devices.h>
-#include <stdio.h>
-#include <debug.h>
-#include <window.h>
+#include <DotCVM/utils/log.h>
+#include <DotCVM/devices/devices.h>
+#include <DotCVM/debug/debug.h>
+#include <DotCVM/gui/window.h>
 #include <stdlib.h>
 #include <string>
 #include <unistd.h>
-
+#include <stdio.h>
 #include <stdarg.h>
 
 WindowData mainWin;
