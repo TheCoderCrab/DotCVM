@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <app_main.h>
 #include <dctypes.h>
+#include <err_code.h>
 
 
 namespace fs
@@ -42,7 +43,7 @@ namespace fs
         if(!exists(filename))
         {
             debug("Can't request size of inexisting file!");
-            requestClose();
+            requestClose(FILE_OPEN_FAILURE, "Error while trying to read size of file");
         }
         FILE* file = fopen(filename, "r");
         fseek(file, 0, SEEK_END);

@@ -1,5 +1,5 @@
 #!/bin/sh
 
-# Expects to be executed from build dir
+# Expects to be executed from main dir
 
-rm *.class *.log
+# Does nothing for the moment

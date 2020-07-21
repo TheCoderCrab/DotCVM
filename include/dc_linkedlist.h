@@ -63,31 +63,40 @@ public:
     }
     void add(T element)
     {
+        debug("Adding new element to list");
         T* ptr;
 #ifdef DC_LINKED_LIST_USE_MALLOC // This is for debug.cpp
-        ptr = malloc(sizeof(T));
+        ptr = (T*) malloc(sizeof(T));
 #else
         ptr = new T;
 #endif
+        debug("Allocated space for element data");
         *ptr = element;
         if(m_FirstElement == nullptr)
         {
+            debug("Setting first element");
 #ifdef DC_LINKED_LIST_USE_MALLOC // This is for debug.cpp
-        m_FirstElement = malloc(sizeof(LinkedList<T>));
+            m_FirstElement = (LinkedListElement<T>*) malloc(sizeof(LinkedListElement<T>));
 #else
-        m_FirstElement = new LinkedListElement<T>;
+            m_FirstElement = new LinkedListElement<T>;
 #endif
+            m_FirstElement->next = nullptr;
+            m_FirstElement->ptr = ptr;
+            debug("Added new element to list");
             return;
         }
         LinkedListElement<T>* lnElm;
 #ifdef DC_LINKED_LIST_USE_MALLOC // This is for debug.cpp
-        lnElm = malloc(sizeof(LinkedList<T>));
+        lnElm = (LinkedListElement<T>*) malloc(sizeof(LinkedListElement<T>));
 #else
         lnElm = new LinkedListElement<T>;
 #endif
+        debug("Allocated space for element");
+        debug("Setting up element");
         lnElm->ptr = ptr;
+        lnElm->next = nullptr;
         lastElement().next = lnElm;
-        debug("Added new element");
+        debug("Added new element to list");
     }
     void remove(size_t index)
     {

@@ -9,7 +9,8 @@ namespace devices
         log("Initializing devices");
         Memory* mem = new Memory(memSize);
         debug("Memory allocated");
-        cpu = new CPU(mem, new Drive(diskSizeIfNotPresentInBlocks), new Screen(mem));
+        cpu = new CPU(mem, new Drive(diskSizeIfNotPresentInBlocks), new ScreenDevice(mem));
+        debug("Created CPU");
     }
     void update()
     {
@@ -18,7 +19,6 @@ namespace devices
 
     void exit()
     {
-        cpu->exit();
         delete cpu;
     }
 

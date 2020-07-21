@@ -2,10 +2,9 @@
 #define APP_MAIN_H
 
 #include <stdint.h>
+#include <window.h>
 
-void setPixel(int32_t x, int32_t y, int32_t color);
-int getPixel(int32_t x, int32_t y);
-void refreshScr();
-void requestClose();
+void refreshScr(WindowData window, uint* screenBuffer, bool force = false);
+void requestClose(int errCode, const char* msg);
 
 #endif
