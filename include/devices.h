@@ -8,7 +8,6 @@
 #include <fstream>
 #include <app_main.h>
 #include <optional>
-#include <maths.h>
 #include <stdio.h>
 #include <dc_utils.h>
 #include <stdint.h>
