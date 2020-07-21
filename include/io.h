@@ -15,10 +15,10 @@ enum IOInputMode { INSTRUCTION, ARGUMENT };
 #define IO_DRIVE_STATUS          0x05 /* Get status of last operation */
 #define IO_DRIVE_GET_SIZE        0x06 /* Get disk size in blocks */
 
-#define IO_SCR_SET_TEXT_MODE     0x07 /* Set screen to text mode */
-#define IO_SCR_SET_PXL_MODE      0x08 /* Set screen to pixel mode*/
-#define IO_SCR_SET_CURSOR_X      0x09 /* Set cursor x position (only in text mode)*/
-#define IO_SCR_SET_CURSOR_Y      0x0A /* Set cursor y position (only in text mode)*/
-#define IO_SCR_FORCE_REFRESH     0x0B /* Forces a screen refresh */
+#define IO_SCR_SET_TEXT_MODE     0x00 /* Set screen to text mode */
+#define IO_SCR_SET_PXL_MODE      0x01 /* Set screen to pixel mode*/
+#define IO_SCR_SET_CURSOR_X      0x02 /* Set cursor x position (only in text mode)*/
+#define IO_SCR_SET_CURSOR_Y      0x03 /* Set cursor y position (only in text mode)*/
+#define IO_SCR_FORCE_REFRESH     0x04 /* Forces a screen refresh */
 
 #endif
