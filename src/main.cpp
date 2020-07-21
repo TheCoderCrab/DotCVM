@@ -44,10 +44,6 @@ void init()
 
 void update()
 {
-   static int c = 0;
-   c++;
-   if(c == 1000)
-      devices::cpu->screen().setPixelAt(10, 10, INT32_MAX);
    devices::update();
 }
 
