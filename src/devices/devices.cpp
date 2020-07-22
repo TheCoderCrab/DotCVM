@@ -7,9 +7,7 @@ namespace devices
     void init(uint32_t memSize, uint32_t diskSizeIfNotPresentInBlocks)
     {
         log("Initializing devices");
-        Memory* mem = new Memory(memSize);
-        debug("Memory allocated");
-        cpu = new CPU(mem, new Drive(diskSizeIfNotPresentInBlocks), new ScreenDevice(mem));
+        cpu = new CPU(memSize, diskSizeIfNotPresentInBlocks);
         debug("Created CPU");
     }
     void update()

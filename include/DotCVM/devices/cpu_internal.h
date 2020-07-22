@@ -54,18 +54,25 @@ private:
 
 
     // Devices
-    Memory*  m_Mem;
-    Drive* m_Drive;
-    ScreenDevice*  m_Scr;
+    Memory*         m_Mem;
+    Drive*          m_Drive;
+    ScreenDevice*   m_Scr;
+    Keyboard*       m_Keyboard;
+    Mouse*          m_Mouse;
+    DebugConsole*   m_DebugConsole;
 
 public:
-    CPU(Memory* mem, Drive* drive, ScreenDevice* scr);
+    CPU(uint32_t memSize, uint32_t sriveSizeIfNotExist);
     ~CPU();
 
     void update();
-    Memory& mem();
-    Drive& drive();
-    ScreenDevice& screen();
+
+    Memory&         mem();
+    Drive&          drive();
+    ScreenDevice&   screen();
+    Keyboard&       keyboard();
+    Mouse&          mouse();
+    DebugConsole&   debugConsole();
 
     // Instructions
     // Returns wether or not register ip should be set to next instruction,

@@ -97,7 +97,7 @@ void Drive::in(Memory* mem, dword in)
             requestClose(IO_INVALID_OPERATION, "INVALID DRIVE IO OPERATION");
             break;
         }
-        m_InputMode == IOInputMode::INSTRUCTION;
+        m_InputMode = IOInputMode::INSTRUCTION;
     }
 }
 dword Drive::out()

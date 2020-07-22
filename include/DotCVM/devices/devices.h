@@ -17,6 +17,41 @@
 #define SCR_WIDTH       720
 #define SCR_HEIGHT      480
 
+class CPU;
+
+class Keyboard
+{
+private:
+    dword m_LastKey;
+public:
+    Keyboard();
+    void press(CPU* cpu, dword keyCode);
+    void release(CPU* cpu, dword keyCode);
+    dword out();
+};
+
+enum MouseEventType { NONE, BUTTON_PRESS, BUTTON_RELEASE, MOTION };
+
+class Mouse
+{
+private:
+    MouseEventType m_LastEventType;
+    dword          m_ButtonNumber;
+    word           m_PointerX, m_PointerY;
+public:
+    Mouse();
+    void move(CPU* cpu, dword x, dword y);
+    void press(CPU* cpu, dword buttonNum);
+    void release(CPU* cpu, dword buttonNum);
+    dword out();   
+};
+
+class DebugConsole
+{
+public:
+    void in(dword in);
+};
+
 class Memory
 {
 private:

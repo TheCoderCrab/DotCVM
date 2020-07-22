@@ -4,12 +4,15 @@
 #include <DotCVM/utils/log.h>
 #include <DotCVM/gui/window.h>
 
-CPU::CPU(Memory* mem, Drive* drive, ScreenDevice* scr)
+CPU::CPU(uint32_t memSize, uint32_t driveSizeIfNotExist)
 {
     debug("Creating CPU");
-    m_Mem   =   mem;
-    m_Drive = drive;
-    m_Scr   =   scr;
+    m_Mem            = new Memory(memSize);
+    m_Drive          = new Drive(driveSizeIfNotExist);
+    m_Scr            = new ScreenDevice(m_Mem);
+    m_Keyboard       = new Keyboard();
+    m_Mouse          = new Mouse();
+    m_DebugConsole   = new DebugConsole();
     debug("CPU created");
 }
 CPU::~CPU()
@@ -17,16 +20,21 @@ CPU::~CPU()
     delete m_Mem;
     delete m_Drive;
     delete m_Scr;
-
+    delete m_Keyboard;
+    delete m_Mouse;
+    delete m_DebugConsole;
 }
 
 void CPU::update()
 {
     m_Scr->update();
 }
-Memory& CPU::mem() {return *m_Mem; }
-Drive& CPU::drive() {return *m_Drive; }
-ScreenDevice& CPU::screen() {return *m_Scr; }
+Memory&       CPU::mem()          { return *m_Mem;            }
+Drive&        CPU::drive()        { return *m_Drive;          }
+ScreenDevice& CPU::screen()       { return *m_Scr;            }
+Keyboard&     CPU::keyboard()     { return *m_Keyboard;       }
+Mouse&        CPU::mouse()        { return *m_Mouse;          }
+DebugConsole& CPU::debugConsole() { return *m_DebugConsole;   }
 
 bool CPU::cpuinf() // 00XXH
 {
@@ -324,6 +332,10 @@ bool CPU::out(dword adr, dword code)
             break;
         case IO_SCR_ADR:
             m_Scr->in(code);
+            break;
+        case IO_DEBUG_CONSOLE_ADR:
+            m_DebugConsole->in(code);
+            break;
         default:
             requestClose(IO_INVALID_OPERATION, "Invalid IO address");
             break;
@@ -341,6 +353,11 @@ bool CPU::in(dword adr, dword& ret)
         break;
     case IO_MEM_ADR:
         ret = m_Mem->out();
+        break;
+    case IO_KEYBOARD_ADR:
+        ret = m_Keyboard->out();
+    case IO_MOUSE_ADR:
+        ret = m_Mouse->out();
     default:
         requestClose(IO_INVALID_OPERATION, "Invalid IO address");
         break;

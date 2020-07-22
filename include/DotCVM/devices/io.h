@@ -6,6 +6,9 @@ enum IOInputMode { INSTRUCTION, ARGUMENT };
 #define IO_DRIVE_ADR             0xD514E010
 #define IO_MEM_ADR               0x8C5EEFAB
 #define IO_SCR_ADR               0x3E33E33E
+#define IO_KEYBOARD_ADR          0x2E1B0A5D
+#define IO_MOUSE_ADR             0x3048EDEA
+#define IO_DEBUG_CONSOLE_ADR     0xDEB46C84
 
 #define IO_DRIVE_READ_BLOCKS     0x00 /* Perform a read operation */
 #define IO_DRIVE_WRITE_BLOCKS    0x01 /* Perform a write operation */

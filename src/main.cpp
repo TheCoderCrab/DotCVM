@@ -13,6 +13,13 @@
 
 WindowData mainWin;
 
+#pragma startup hello
+
+void hello()
+{
+   log("Hell yea");
+}
+
 static bool s_CloseRequested = false;
 static int s_ExitCode = 0;
 static std::string* s_CloseMessage = new std::string("");
@@ -101,23 +108,42 @@ int main() {
    init();
    devices::init(MEM_SIZE, DISK_SIZE);
    refreshScr(mainWin, devices::cpu->screen().buffer(), true);
+   devices::cpu->out(IO_DEBUG_CONSOLE_ADR, 'a');
    XEvent event;
    while (!s_CloseRequested) 
-   {
-      if(XEventWaiting(mainWin.display, KeyPress, event))
-         debug("KeyPress: " << event.xkey.keycode);
-      if(XEventWaiting(mainWin.display, KeyRelease, event))
-         debug("KeyRelease: " << event.xkey.keycode);
-      if(XEventWaiting(mainWin.display, ButtonPress, event))
-         debug("ButtonPress: " << event.xbutton.button);
-      if(XEventWaiting(mainWin.display, ButtonRelease, event))
-         debug("ButtonRelease: " << event.xbutton.button);
-      if(XEventWaiting(mainWin.display, MotionNotify, event))
-         debug("Motion: " << event.xmotion.x << " " << event.xmotion.y);
-      if(XEventWaiting(mainWin.display, Expose, event));
-      if(XEventWaiting(mainWin.display, ClientMessage, event) && event.xclient.data.l[0] == wmDeleteWindowAtom)
-         requestClose(0, "");
+   {  
       update();
+      if(XEventWaiting(mainWin.display, Expose, event)) continue;
+      if(XEventWaiting(mainWin.display, KeyPress, event))
+      {
+         devices::cpu->keyboard().press(devices::cpu, event.xkey.keycode);
+         continue;
+      }
+      if(XEventWaiting(mainWin.display, KeyRelease, event))
+      {
+         devices::cpu->keyboard().release(devices::cpu, event.xkey.keycode);
+         continue;
+      }
+      if(XEventWaiting(mainWin.display, ButtonPress, event))
+      {
+         devices::cpu->mouse().press(devices::cpu, event.xbutton.button);
+         continue;
+      }
+      if(XEventWaiting(mainWin.display, ButtonRelease, event))
+      {
+         devices::cpu->mouse().release(devices::cpu, event.xbutton.button);
+         continue;
+      }
+      if(XEventWaiting(mainWin.display, MotionNotify, event))
+      {
+         devices::cpu->mouse().move(devices::cpu, event.xmotion.x, event.xmotion.y);
+         continue;
+      }
+      if(XEventWaiting(mainWin.display, ClientMessage, event) && event.xclient.data.l[0] == wmDeleteWindowAtom)
+      {
+         requestClose(0, "Window closed");
+         continue;
+      }
    }
    exit();
    XCloseDisplay(mainWin.display);
