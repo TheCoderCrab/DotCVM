@@ -1,2 +1,2 @@
-# DotCVM
-Virtual Machine To Run DotC Byte code
+# DotC Virtual Machine
+No documentatin yet
