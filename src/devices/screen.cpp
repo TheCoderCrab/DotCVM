@@ -16,13 +16,9 @@ dword* ScreenDevice::buffer()
 {
     return m_ScrBuffer;
 }
-void ScreenDevice::setPixelAt(dword x, dword y, dword color)
-{
-    m_ScrBuffer[x + y * SCR_WIDTH] = color;
-}
 void ScreenDevice::update()
 {
-    refreshScr(mainWin, m_ScrBuffer);
+    refreshScr({mainWin}, m_ScrBuffer);
 }
 void ScreenDevice::in(dword in)
 {
@@ -40,7 +36,7 @@ void ScreenDevice::in(dword in)
         case IO_SCR_SET_CURSOR_Y:
             break;
         case IO_SCR_FORCE_REFRESH:
-            refreshScr(mainWin, m_ScrBuffer, true);
+            refreshScr({mainWin}, m_ScrBuffer, true);
             break;
         default:
             requestClose(IO_INVALID_OPERATION, "Invalid screen IO instruction");

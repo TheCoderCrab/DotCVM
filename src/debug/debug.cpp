@@ -63,7 +63,7 @@ void operator delete(void* ptr)
 }
 #endif
 
-void faultHandler(int nSignum, siginfo_t* si, void* vcontext)
+static void signalHandler(int nSignum, siginfo_t* si, void* vcontext)
 {
     if(nSignum == SIGSEGV)
     {
@@ -93,13 +93,13 @@ void faultHandler(int nSignum, siginfo_t* si, void* vcontext)
     }
 }
 
-void setupFaultHandler()
+void setupSignalHandler()
 {
     debug("Setting up fault handler");
     struct sigaction action;
     memset(&action, 0, sizeof(struct sigaction));
     action.sa_flags = SA_SIGINFO;
-    action.sa_sigaction = faultHandler;
+    action.sa_sigaction = signalHandler;
 
     sigaction(SIGSEGV, &action, NULL);
     sigaction(SIGINT, &action, NULL);

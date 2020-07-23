@@ -13,13 +13,6 @@
 
 WindowData mainWin;
 
-#pragma startup hello
-
-void hello()
-{
-   log("Hell yea");
-}
-
 static bool s_CloseRequested = false;
 static int s_ExitCode = 0;
 static std::string* s_CloseMessage = new std::string("");
@@ -72,8 +65,7 @@ void refreshScr(WindowData window, uint* screenBuffer, bool force)
       for(uint x = 0; x < SCR_WIDTH; x++)
          for(uint y = 0; y < SCR_HEIGHT; y++)
          {
-            XSetForeground(window.display, DefaultGC(window.display, window.screen), screenBuffer[x + y * SCR_WIDTH]);
-            XDrawPoint(window.display, window.window, DefaultGC(window.display, window.screen), x, y);
+            setPixel(window, x, y, screenBuffer[x + y * SCR_WIDTH]);
             s_CurrentScreenBuffer[x + y * SCR_WIDTH] = screenBuffer[x + y * SCR_WIDTH];
          }
    }
@@ -99,54 +91,20 @@ void exit()
 
 int main() {
    log("Starting DotC Virtual Machine");
-   debug("Setting up fault handler");
-   setupFaultHandler();
+   debug("Setting up signal handler");
+   setupSignalHandler();
    debug("Creating window");
-   mainWin = createWindow(s_WinTitle, 720, 480);
-   Atom wmDeleteWindowAtom = XInternAtom(mainWin.display, "WM_DELETE_WINDOW", False);
-   XSetWMProtocols(mainWin.display, mainWin.window, &wmDeleteWindowAtom, 1);
+   mainWin = setupMainWindow(s_WinTitle, 720, 480);
    init();
    devices::init(MEM_SIZE, DISK_SIZE);
-   refreshScr(mainWin, devices::cpu->screen().buffer(), true);
-   devices::cpu->out(IO_DEBUG_CONSOLE_ADR, 'a');
-   XEvent event;
    while (!s_CloseRequested) 
    {  
       update();
-      if(XEventWaiting(mainWin.display, Expose, event)) continue;
-      if(XEventWaiting(mainWin.display, KeyPress, event))
-      {
-         devices::cpu->keyboard().press(devices::cpu, event.xkey.keycode);
-         continue;
-      }
-      if(XEventWaiting(mainWin.display, KeyRelease, event))
-      {
-         devices::cpu->keyboard().release(devices::cpu, event.xkey.keycode);
-         continue;
-      }
-      if(XEventWaiting(mainWin.display, ButtonPress, event))
-      {
-         devices::cpu->mouse().press(devices::cpu, event.xbutton.button);
-         continue;
-      }
-      if(XEventWaiting(mainWin.display, ButtonRelease, event))
-      {
-         devices::cpu->mouse().release(devices::cpu, event.xbutton.button);
-         continue;
-      }
-      if(XEventWaiting(mainWin.display, MotionNotify, event))
-      {
-         devices::cpu->mouse().move(devices::cpu, event.xmotion.x, event.xmotion.y);
-         continue;
-      }
-      if(XEventWaiting(mainWin.display, ClientMessage, event) && event.xclient.data.l[0] == wmDeleteWindowAtom)
-      {
-         requestClose(0, "Window closed");
-         continue;
-      }
+      updateMainWindow();
    }
+   closeWindow(mainWin);
    exit();
-   XCloseDisplay(mainWin.display);
+   closeDisplay();
    return s_ExitCode;
 }
 

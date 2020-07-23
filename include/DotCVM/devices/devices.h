@@ -101,7 +101,6 @@ private:
 public:
     ScreenDevice(Memory* mem);
     dword* buffer();
-    void setPixelAt(dword x, dword y, dword color);
     void update();
     void in(dword in);
 };

@@ -2,4 +2,5 @@
 
 # Expects to be executed from main dir
 
-# Does nothing for the moment
+rm -r build/
+mkdir build/

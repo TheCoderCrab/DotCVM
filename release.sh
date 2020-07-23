@@ -10,9 +10,6 @@
 
 export MAINDIR=$PWD
 
-$MAINDIR/clean.sh
-
-
 cd build
 $MAINDIR/build.sh $MAINDIR 0 && clear && $MAINDIR/run.sh
 
