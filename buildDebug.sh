@@ -5,8 +5,9 @@
 
 export MAINDIR=$PWD
 
-cd build
+mkdir -p build/Debug
+cd build/Debug
 
-$MAINDIR/build.sh $MAINDIR 1
+$MAINDIR/build/build.sh $MAINDIR 1
 
 cd $MAINDIR

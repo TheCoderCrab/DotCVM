@@ -2,5 +2,5 @@
 
 # Expects to be executed from main dir
 
-rm -r build/
-mkdir build/
+rm -r build/Debug
+rm -r build/Release
