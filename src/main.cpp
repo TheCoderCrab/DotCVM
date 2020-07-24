@@ -89,7 +89,8 @@ void exit()
    log("Bye");
 }
 
-int main() {
+int main() 
+{
    log("Starting DotC Virtual Machine");
    debug("Setting up signal handler");
    setupSignalHandler();

@@ -24,7 +24,7 @@ public:
         m_Size = 0;
         m_Ptr = nullptr;
     }
-    void* ptr() { return m_Ptr; }
+    void* ptr()   { return m_Ptr;  }
     size_t size() { return m_Size; }
 };
 

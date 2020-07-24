@@ -6,4 +6,6 @@
 
 # Expects to be executed from main dir
 
+echo -e "\e[1m\e[32mRunning DotCVM in release mode\e[0m\e[39m"
+
 ./buildRelease.sh && build/Release/DotCVM

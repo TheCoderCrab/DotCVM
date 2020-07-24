@@ -2,6 +2,8 @@
 
 # This builds in release mode
 
+echo -e "\e[1m\e[32mInstalling DotCVM\e[0m\e[39m"
+
 desktop_file="[Desktop Entry]
 Name=DotC Virtual Machine
 Comment=A Virtual Machine Using DotArch architecture
@@ -23,3 +25,5 @@ else
     echo "Please run as root!"
     exit 0
 fi
+
+echo -e "\e[1m\e[32mInstalled to /opt/dotcvm/\e[0m\e[39m"

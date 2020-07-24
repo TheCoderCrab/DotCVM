@@ -2,6 +2,8 @@
 
 # This builds in debug mode
 
+echo -e "\e[1m\e[32mInstalling DotCVM in Debug mode\e[0m\e[39m"
+
 desktop_file="[Desktop Entry]
 Name=DotCVM_DEBUG
 Comment=A Virtual Machine Using DotArch architecture DEBUG_MODE
@@ -24,3 +26,5 @@ else
     echo "Please run as root!"
     exit 0
 fi
+
+echo -e "\e[1m\e[32mInstalled to /opt/dotcvm_debug/\e[0m\e[39m"
