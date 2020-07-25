@@ -10,7 +10,7 @@ void Keyboard::press(CPU* cpu, dword keyCode)
     if(m_LastKey == 0)
     {
         m_LastKey = keyCode;
-        cpu->intr(KEYBOARD_PRESS_INTERRUPT);
+        cpu->intr(KEYBOARD_PRESS_INTERRUPT, true);
     }
 }
 void Keyboard::release(CPU* cpu, dword keyCode)
@@ -18,7 +18,7 @@ void Keyboard::release(CPU* cpu, dword keyCode)
     if(m_LastKey == 0)
     {
         m_LastKey = keyCode;
-        cpu->intr(KEYBOARD_PRESS_INTERRUPT);
+        cpu->intr(KEYBOARD_PRESS_INTERRUPT, true);
     }
 }
 dword Keyboard::out()

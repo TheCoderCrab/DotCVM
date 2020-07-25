@@ -74,7 +74,7 @@ XWindowData setupXMainWindow(const char* title, unsigned int width, unsigned int
 
 void updateXMainWindow()
 {
-   static XEvent event;
+   XEvent event;
    if(XEventWaiting(mainWin.display, Expose, event))
       refreshScr({mainWin}, devices::cpu->screen().buffer(), true);
    if(XEventWaiting(mainWin.display, KeyPress, event))

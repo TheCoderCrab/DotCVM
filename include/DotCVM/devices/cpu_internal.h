@@ -74,6 +74,10 @@ public:
     Mouse&          mouse();
     DebugConsole&   debugConsole();
 
+    address         nextInstructionAdr();
+
+    void            execute(byte instruction, byte* argDescriptor);
+
     // Instructions
     // Returns wether or not register ip should be set to next instruction,
     // true = change reg ip, false = don't
@@ -128,7 +132,7 @@ public:
     // sihp: 22XXH
     bool sihp(dword& ctnr);
     // int: 23XXH
-    bool intr(byte intCode);
+    bool intr(byte intCode, bool hardwareInterrupt);
     // iret: 24XXH
     bool iret();
 
@@ -172,7 +176,7 @@ public:
     // hlt: 4EXXH
     bool hlt();
     // sleep: 4FXXH
-    bool sleep();
+    bool sleep(uint32_t time);
     // Control: 5XXXH
     //Not defined yet
 

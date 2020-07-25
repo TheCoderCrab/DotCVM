@@ -3,6 +3,8 @@
 #include <DotCVM/utils/err_code.h>
 #include <DotCVM/utils/log.h>
 #include <DotCVM/gui/window.h>
+#include <DotCVM/devices/instructions.h>
+#include <unistd.h>
 
 CPU::CPU(uint32_t memSize, uint32_t driveSizeIfNotExist)
 {
@@ -35,6 +37,16 @@ ScreenDevice& CPU::screen()       { return *m_Scr;            }
 Keyboard&     CPU::keyboard()     { return *m_Keyboard;       }
 Mouse&        CPU::mouse()        { return *m_Mouse;          }
 DebugConsole& CPU::debugConsole() { return *m_DebugConsole;   }
+
+address CPU::nextInstructionAdr()
+{
+    return ip + sizeOfInstruction(&(mem()[ip]));
+}
+
+void CPU::execute(byte instruction, byte* argDescriptor)
+{
+    // TODO: implement execute function
+}
 
 bool CPU::cpuinf() // 00XXH
 {
@@ -116,7 +128,7 @@ bool CPU::sihp(dword& ctnr)
 }
 
 
-bool CPU::intr(byte intCode)
+bool CPU::intr(byte intCode, bool hardwareInterrupt)
 {
     push(a);
     push(b);
@@ -141,7 +153,7 @@ bool CPU::intr(byte intCode)
 
     push(intCode);
 
-    irp = ip; // ALERT: Next instruction after ip actually, not ip itself
+    irp = hardwareInterrupt ? ip.uval32 : nextInstructionAdr();
 
     cs  = 0;
     ds  = 0;
@@ -263,7 +275,7 @@ bool CPU::jmp(address adr)
 
 bool CPU::call(address adr)
 {
-    rp = ip; // ALERT: Make so that it returns to the next instruction
+    rp = nextInstructionAdr();
     ip = adr;
     return false;
 }
@@ -290,9 +302,9 @@ bool CPU::hlt()
 }
 
 
-bool CPU::sleep()
+bool CPU::sleep(uint32_t time)
 {
-    // TODO: implemnt sleep
+    usleep(time);
     return true;
 }
 

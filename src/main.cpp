@@ -100,8 +100,8 @@ int main()
    devices::init(MEM_SIZE, DISK_SIZE);
    while (!s_CloseRequested) 
    {  
-      update();
       updateMainWindow();
+      update();
    }
    closeWindow(mainWin);
    exit();

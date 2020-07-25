@@ -15,19 +15,19 @@ void Mouse::move(CPU* cpu, dword x, dword y)
     m_PointerX = x;
     m_PointerY = y;
     m_LastEventType = MouseEventType::MOTION;
-    cpu->intr(MOUSE_MOTION_INTERRUPT);
+    cpu->intr(MOUSE_MOTION_INTERRUPT, true);
 }
 void Mouse::press(CPU* cpu, dword buttonNum)
 {
     m_ButtonNumber = buttonNum;
     m_LastEventType = MouseEventType::BUTTON_PRESS;
-    cpu->intr(MOUSE_PRESS_INTERRUPT);
+    cpu->intr(MOUSE_PRESS_INTERRUPT, true);
 }
 void Mouse::release(CPU* cpu, dword buttonNum)
 {
     m_ButtonNumber = buttonNum;
     m_LastEventType = MouseEventType::BUTTON_RELEASE;
-    cpu->intr(MOUSE_RELEASE_INTERRUPT);
+    cpu->intr(MOUSE_RELEASE_INTERRUPT, true);
 }
 
 dword Mouse::out()
