@@ -2,6 +2,7 @@
 #define CPU_H
 
 #include <DotCVM/devices/reg_internal.h>
+#include <DotCVM/devices/instructions.h>
 
 class CPU
 {
@@ -23,6 +24,7 @@ private:
     Reg16    ds; // DATA segment descriptor
     Reg16    ss; // STACK segment descriptor
     Reg16    cs; // CODE segment descriptor
+    Reg32  memr; // Holds the address to be read from memory
 
 
     // Interrupts: 2X0XH
@@ -74,16 +76,16 @@ public:
     Mouse&          mouse();
     DebugConsole&   debugConsole();
 
-    address         nextInstructionAdr();
+    Argument        arg(byte argPosition); // Returns argument data of the argument at (ip + 1) position <argPosition>
+    ArgumentType    argType(byte argPosition); // Returns argument type of the argument at (ip + 1) position <argPosition>
+    
 
-    void            execute(byte instruction, byte* argDescriptor);
-
+    
     // Instructions
     // Returns wether or not register ip should be set to next instruction,
     // true = change reg ip, false = don't
 
     // Misc: 0XXXH
-
 
     // cpuinf: 00XXH
     bool cpuinf() ;
@@ -91,10 +93,10 @@ public:
     // Data management: 1XXXH
     // set: 10XXH
     template<typename T = dword> bool set(T& dest, T val)
-     {
-         dest = val;
-         return true;
-     }
+    {
+        dest = val;
+        return true;
+    }
     // push: 11XXH
     template<typename T = dword> bool push(T val)
     {

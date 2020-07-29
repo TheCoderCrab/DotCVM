@@ -5,6 +5,7 @@
 #include <DotCVM/gui/window.h>
 #include <DotCVM/devices/instructions.h>
 #include <unistd.h>
+#include <DotCVM/devices/interrupts.h>
 
 CPU::CPU(uint32_t memSize, uint32_t driveSizeIfNotExist)
 {
@@ -38,15 +39,20 @@ Keyboard&     CPU::keyboard()     { return *m_Keyboard;       }
 Mouse&        CPU::mouse()        { return *m_Mouse;          }
 DebugConsole& CPU::debugConsole() { return *m_DebugConsole;   }
 
-address CPU::nextInstructionAdr()
+Argument CPU::arg(byte argPosition)
 {
-    return ip + sizeOfInstruction(&(mem()[ip]));
+    if(argPosition == 0)
+        return Argument(this, argType(argPosition), mem().at<dword>(ip + 2));
+    return Argument(this, argType(argPosition), mem().at<dword>(ip + 6));
 }
 
-void CPU::execute(byte instruction, byte* argDescriptor)
+ArgumentType CPU::argType(byte argPosition)
 {
-    // TODO: implement execute function
+    if(argPosition == 0)
+        return (ArgumentType)(mem().at<byte>(ip + 1) & 0x0F);
+    return (ArgumentType)((mem().at<byte>(ip + 1) & 0xF0) >> 4);
 }
+
 
 bool CPU::cpuinf() // 00XXH
 {
@@ -153,7 +159,7 @@ bool CPU::intr(byte intCode, bool hardwareInterrupt)
 
     push(intCode);
 
-    irp = hardwareInterrupt ? ip.uval32 : nextInstructionAdr();
+    irp = hardwareInterrupt ? ip.uval32 : ip + 10;
 
     cs  = 0;
     ds  = 0;
@@ -275,7 +281,7 @@ bool CPU::jmp(address adr)
 
 bool CPU::call(address adr)
 {
-    rp = nextInstructionAdr();
+    rp = ip + 10;
     ip = adr;
     return false;
 }

@@ -105,8 +105,9 @@ public:
     void in(dword in);
 };
 
+#ifndef CPU_H
 #include <DotCVM/devices/cpu_internal.h>
-
+#endif
 
 namespace devices
 {

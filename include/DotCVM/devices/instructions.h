@@ -2,6 +2,8 @@
 #define INSTRUCTIONS_H
 
 #include <stdint.h>
+#include <DotCVM/devices/devices.h>
+#include <DotCVM/utils/types.h>
 
 #define INSTRUCTION_CPUINFO     0x00
 
@@ -67,7 +69,30 @@
 
 #define INSTRUCTIONS_flags // TODO: add flag instructions
 
-uint32_t sizeOfInstruction(uint8_t* instructionPtr);
-uint32_t sizeOfArg(uint8_t* argDescriptor, uint8_t argPosition);
+#define ARG_WRITABLE(x)     ((dword) ArgumentType::MEM8 <= (dword) x && (dword) x <= ArgumentType::REG)
+
+enum ArgumentType { DISABLED, 
+                    LITERAL,
+                    MEM8, MEM16, MEM32,
+                    REG };
+
+struct Argument
+{
+private:
+    dword        m_RawVal;
+    ArgumentType m_Type;
+    CPU*         m_cpu;
+public:
+    Argument(CPU* cpu, ArgumentType type, dword val);
+    byte&   memByte();
+    word&   memWord();
+    dword&  memDword();
+
+    Reg8&   reg8();
+    Reg16&  reg16();
+    Reg32&  reg32();
+
+    dword   literal();
+};
 
 #endif
