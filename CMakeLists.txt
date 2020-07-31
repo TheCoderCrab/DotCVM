@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.12.4) 
 
-project(DotCVM)
+project(dotcvm)
 
 find_package(X11 REQUIRED)
 
 file(GLOB_RECURSE SRC_FILES "src/*.cpp")
 
-add_executable(DotCVM ${SRC_FILES})
+add_executable(dotcvm ${SRC_FILES})
 
 if(DEBUG)
 message("Building in debug mode")
@@ -19,10 +19,10 @@ set(CMAKE_BUILD_TYPE Release)
 add_compile_definitions(RELEASE)
 endif()
 
-set_property(TARGET DotCVM PROPERTY CXX_STANDARD 17)
+set_property(TARGET dotcvm PROPERTY CXX_STANDARD 17)
 
 include_directories(${X11_INCLUDE_DIR} "include/")
 
 link_directories(${X11_LIBRARIES})
 
-target_link_libraries(DotCVM ${X11_LIBRARIES})
+target_link_libraries(dotcvm ${X11_LIBRARIES})
