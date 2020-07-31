@@ -1,4 +1,4 @@
 .vscode/
-build/Debug
-build/Release
+build/debug
+build/release
 CMakeLists.txt.user
