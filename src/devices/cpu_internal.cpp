@@ -6,6 +6,7 @@
 #include <DotCVM/devices/instructions.h>
 #include <unistd.h>
 #include <DotCVM/devices/interrupts.h>
+#include <DotCVM/devices/reg.h>
 
 CPU::CPU(uint32_t memSize, uint32_t driveSizeIfNotExist)
 {
@@ -30,6 +31,8 @@ CPU::~CPU()
 
 void CPU::update()
 {
+    if(execute())
+        ip += 10;
     m_Scr->update();
 }
 Memory&       CPU::mem()          { return *m_Mem;            }
@@ -39,11 +42,16 @@ Keyboard&     CPU::keyboard()     { return *m_Keyboard;       }
 Mouse&        CPU::mouse()        { return *m_Mouse;          }
 DebugConsole& CPU::debugConsole() { return *m_DebugConsole;   }
 
+byte          CPU::instruction()
+{
+    return mem().at<byte>(ip);
+}
+
 Argument CPU::arg(byte argPosition)
 {
     if(argPosition == 0)
-        return Argument(this, argType(argPosition), mem().at<dword>(ip + 2));
-    return Argument(this, argType(argPosition), mem().at<dword>(ip + 6));
+        return Argument(this, argType(argPosition), mem().at<dword>(ip + 2), 0);
+    return Argument(this, argType(argPosition), mem().at<dword>(ip + 6), 1);
 }
 
 ArgumentType CPU::argType(byte argPosition)
@@ -51,6 +59,98 @@ ArgumentType CPU::argType(byte argPosition)
     if(argPosition == 0)
         return (ArgumentType)(mem().at<byte>(ip + 1) & 0x0F);
     return (ArgumentType)((mem().at<byte>(ip + 1) & 0xF0) >> 4);
+}
+
+Reg8&   CPU::reg8(byte id)
+{
+    err("Trying to get an inaccessible register8"); // Since all 8-bit registers are inaccessible
+    if(id == REG_I_CPL)
+        return cpl;
+    err("No 8-bit register with id: " << id << " returning nullreg8");
+    return nullreg8;
+}
+Reg16&  CPU::reg16(byte id)
+{
+    err("Trying to get an inaccessible register16"); // Since all 16-bit registers are inaccessible
+    switch (id)
+    {
+    case REG_I_CS: return cs;
+    case REG_I_DS: return ds;
+    case REG_I_SS: return ss;
+    default:
+        err("No 16-bit register with id: " << id << " return nullreg16");
+        return nullreg16;
+    }
+}
+Reg32&  CPU::reg32(byte id)
+{
+    switch(id)
+    {
+        case REG_A: return a;
+        case REG_B: return b;
+        case REG_C: return c;
+        case REG_D: return d;
+        case REG_R: return r;
+        case REG_F: return f;
+        case REG_T: return t;
+        case REG_U: return u;
+        case REG_SP: return sp;
+        case REG_IRP: return irp;
+        case REG_IHP: return ihp;
+        case REG_RP: return rp;
+        case REG_IP: return ip;
+        case REG_FA: return fa;
+        case REG_FB: return fb;
+        case REG_FC: return fc;
+        case REG_FD: return fd;
+        case REG_FR: return fr;
+        case REG_I_MEMR0:
+            err("Trying to access inaccessible register memr0");
+            return memr0;
+        case REG_I_MEMR1:
+            err("Trying to access inaccessible register memr1");
+            return memr1;
+        case REG_I_CR0:
+            err("Trying to access inaccessible register cr0");
+            return cr0;
+        case REG_I_CR1:
+            err("Trying to access inaccessible register cr1");
+            return cr1;
+        case REG_I_CR2:
+            err("Trying to access inaccessible register cr2");
+            return cr2;
+        default:
+            err("Invalid register id: " << id << " returning nullreg32");
+            return nullreg32;
+    }
+}
+
+byte CPU::regSize(byte id)
+{
+    switch (id)
+    {
+    case REG_I_CPL:
+        return 8;
+    case REG_I_CS:
+    case REG_I_DS:
+    case REG_I_SS:
+        return 16;
+    case REG_I_GDTR: return 48;
+    default: return 32; // TODO: The id may be invalid
+    }
+}
+
+bool CPU::execute()
+{
+    switch (instruction())
+    {
+    case INSTRUCTION_SET:
+        if(ARG_WRITABLE(argType(0)))
+            return set()
+    default:
+        break;
+    }
+    return false;
 }
 
 
@@ -68,51 +168,51 @@ bool CPU::cpuinf() // 00XXH
 
 
 
-bool CPU::lgdtr(address adr)
+bool CPU::lgdtr(Argument adr)
 {
     gdtr.load(m_Mem, adr);
     return true;
 }
 
-bool CPU::sgdtr(address adr)
+bool CPU::sgdtr(Argument adr)
 {
     gdtr.store(m_Mem, adr);
     return true;
 }
 
-bool CPU::lds(word val)
+bool CPU::lds(Argument val)
 {
     ds = val;
     return true;
 }
 
-bool CPU::lcs(word val)
+bool CPU::lcs(Argument val)
 {
     cs = val;
     return true;
 }
 
-bool CPU::lss(word val)
+bool CPU::lss(Argument val)
 {
     ss = val;
     return true;
 }
 
-bool CPU::sds(word& ctnr)
+bool CPU::sds(Argument ctnr)
 {
     ctnr = ds;
     return true;
 }
 
 
-bool CPU::scs(word& ctnr)
+bool CPU::scs(Argument ctnr)
 {
     ctnr = cs;
     return true;
 }
 
 
-bool CPU::sss(word& ctnr)
+bool CPU::sss(Argument ctnr)
 {
     ctnr = ss;
     return true;
@@ -120,21 +220,21 @@ bool CPU::sss(word& ctnr)
 
 
 
-bool CPU::lihp(dword val)
+bool CPU::lihp(Argument val)
 {
     ihp = val;
     return true;
 }
 
 
-bool CPU::sihp(dword& ctnr)
+bool CPU::sihp(Argument ctnr)
 {
     ctnr = ihp;
     return true;
 }
 
 
-bool CPU::intr(byte intCode, bool hardwareInterrupt)
+bool CPU::intr(Argument intCode, bool hardwareInterrupt)
 {
     push(a);
     push(b);
@@ -203,68 +303,68 @@ bool CPU::iret()
 
 
 
-bool CPU::not_(dword& result, dword operand)
+bool CPU::not_(Argument result, Argument operand)
 {
     result = !(operand);
     return true;
 }
-bool CPU::not_(dword& operand)
+bool CPU::not_(Argument operand)
 {
     operand = !operand;
     return true;
 }
 
 
-bool CPU::add(dword& op1, dword op2)
+bool CPU::add(Argument op1, Argument op2)
 {
     op1 += op2;
     return true;
 }
 
 
-bool CPU::sub(dword& op1, dword op2)
+bool CPU::sub(Argument op1, Argument op2)
 {
     op1 -= op2;
     return true;
 }
 
 
-bool CPU::mul(dword& op1, dword op2)
+bool CPU::mul(Argument op1, Argument op2)
 {
     op1 *= op2;
     return true;
 }
 
 
-bool CPU::div(dword& op1, dword op2)
+bool CPU::div(Argument op1, Argument op2)
 {
     op1 /= op2;
     return true;
 }
 
 
-bool CPU::fadd(float& op1, float op2)
+bool CPU::fadd(Argument op1, Argument op2)
 {
     op1 += op2;
     return true;
 }
 
 
-bool CPU::fsub(float& op1, float op2)
+bool CPU::fsub(Argument op1, Argument op2)
 {
     op1 -= op2;
     return true;
 }
 
 
-bool CPU::fmul(float& op1, float op2)
+bool CPU::fmul(Argument op1, Argument op2)
 {
     op1 *= op2;
     return true;
 }
 
 
-bool CPU::fdiv(float& op1, float op2)
+bool CPU::fdiv(Argument op1, Argument op2)
 {
     op1 /= op2;
     return true;
@@ -272,14 +372,14 @@ bool CPU::fdiv(float& op1, float op2)
 
 
 
-bool CPU::jmp(address adr)
+bool CPU::jmp(Argument adr)
 {
     ip = adr;
     return false;
 }
 
 
-bool CPU::call(address adr)
+bool CPU::call(Argument adr)
 {
     rp = ip + 10;
     ip = adr;
@@ -287,7 +387,7 @@ bool CPU::call(address adr)
 }
 
 
-bool CPU::joc(address adr, bool c)
+bool CPU::joc(Argument adr, bool c)
 {
     if(c)
         ip = adr;
@@ -308,14 +408,14 @@ bool CPU::hlt()
 }
 
 
-bool CPU::sleep(uint32_t time)
+bool CPU::sleep(Argument time)
 {
     usleep(time);
     return true;
 }
 
 
-bool CPU::lcpl(byte ncpl)
+bool CPU::lcpl(Argument ncpl)
 {
     // TODO: check for 0 <= cpl <= 3
     cpl = ncpl;
@@ -323,25 +423,25 @@ bool CPU::lcpl(byte ncpl)
 }
 
 
-bool CPU::scpl(byte& ctn)
+bool CPU::scpl(Argument ctn)
 {
     ctn = cpl;
     return true;
 }
 
 
-bool CPU::intg(dword& op1, float op2)
+bool CPU::intg(Argument op1, Argument op2)
 {
     op1 = (dword) op2;
     return true;
 }
-bool CPU::ifloat(float& op1, dword op2)
+bool CPU::ifloat(Argument op1, Argument op2)
 {
-    op1 = (float) op2;
+    op1 = op2.asFloat();
     return true;
 }
 
-bool CPU::out(dword adr, dword code)
+bool CPU::out(Argument adr, Argument code)
 {
     switch(adr)
     {
@@ -362,9 +462,9 @@ bool CPU::out(dword adr, dword code)
 }
 
 
-bool CPU::in(dword adr, dword& ret)
+bool CPU::in(Argument adr, Argument ret)
 {
-    switch (adr)
+    switch(adr)
     {
     case IO_DRIVE_ADR:
         ret = m_Drive->out();

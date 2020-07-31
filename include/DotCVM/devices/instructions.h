@@ -70,20 +70,38 @@
 #define INSTRUCTIONS_flags // TODO: add flag instructions
 
 #define ARG_WRITABLE(x)     ((dword) ArgumentType::MEM8 <= (dword) x && (dword) x <= ArgumentType::REG)
+#define ARG_LITERAL(x)      (x == ArgumentType::LITERAL)
+#define ARG_MEM(x)          ((dword) ArgumentType::MEM8 <= (dword) x && (dword) x <= ArgumentType::MEM32)
+#define ARG_MEM8(x)         (x == ArgumentType::MEM8)
+#define ARG_MEM16(x)        (x == ArgumentType::MEM16)
+#define ARG_MEM32(x)        (x == ArgumentType::MEM32)
+#define ARG_REG(x)          (x == ArgumentType::REG)
 
 enum ArgumentType { DISABLED, 
                     LITERAL,
                     MEM8, MEM16, MEM32,
                     REG };
 
-struct Argument
+class Argument
 {
 private:
-    dword        m_RawVal;
+    union
+    {
+        dword        m_RawVal;
+        float        m_floatRawVal;
+        byte         m_RawValBytes[4];
+    };
+    byte m_ArgPosition;
     ArgumentType m_Type;
     CPU*         m_cpu;
+    Reg8*        m_reg8;
+    Reg16*       m_reg16;
+    Reg32*       m_reg32;
 public:
-    Argument(CPU* cpu, ArgumentType type, dword val);
+    Argument(CPU* cpu, ArgumentType type, dword val, byte argPosition);
+    Argument(Reg8& reg);
+    Argument(Reg16& reg);
+    Argument(Reg32& reg);
     byte&   memByte();
     word&   memWord();
     dword&  memDword();
@@ -93,6 +111,17 @@ public:
     Reg32&  reg32();
 
     dword   literal();
+    void operator=(float val);
+    void operator=(Reg16 reg);
+    void operator=(Reg32 reg);
+    void operator+=(dword val);
+    void operator-=(dword val);
+    void operator*=(dword val);
+    void operator/=(dword val);
+
+    void operator=(dword val);
+    operator dword();
+    float asFloat();
 };
 
 #endif

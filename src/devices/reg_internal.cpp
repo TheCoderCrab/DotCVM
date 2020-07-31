@@ -15,6 +15,23 @@ Reg8 Reg8::operator=(byte val)
 {
     return val;
 }
+Reg8 Reg8::operator+=(byte val)
+{
+    return Reg8(uval8 + val);
+}
+Reg8 Reg8::operator-=(byte val)
+{
+    return Reg8(uval8 - val);
+}
+Reg8 Reg8::operator*=(byte val)
+{
+    return Reg8(uval8 * val);
+}
+Reg8 Reg8::operator/=(byte val)
+{
+    return Reg8(uval8 / val);
+}
+
 Reg8::operator byte()
 {
     return uval8;
@@ -51,6 +68,24 @@ Reg16 Reg16::operator=(word val)
 {
     return val;
 }
+
+Reg16 Reg16::operator+=(word val)
+{
+    return Reg16(uval16 + val);
+}
+Reg16 Reg16::operator-=(word val)
+{
+    return Reg16(uval16 - val);
+}
+Reg16 Reg16::operator*=(word val)
+{
+    return Reg16(uval16 * val);
+}
+Reg16 Reg16::operator/=(word val)
+{
+    return Reg16(uval16 / val);
+}
+
 Reg16::operator word()
 {
     return uval16;
@@ -95,10 +130,20 @@ Reg32 Reg32::operator-=(dword val)
 {
     return uval32 - val;
 }
+Reg32 Reg32::operator*=(dword val)
+{
+    return uval32 * val;
+}
+Reg32 Reg32::operator/=(dword val)
+{
+    return uval32 / val;
+}
+
 Reg32::operator dword()
 {
     return uval32;
 }
+
 void Reg32::operator()(byte offset, bool val)
 {
     uval32 |= val << offset;

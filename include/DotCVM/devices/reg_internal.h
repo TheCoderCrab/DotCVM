@@ -1,8 +1,9 @@
-#ifndef REG_H
-#define REG_H
+#ifndef REG_INTERNAL_H
+#define REG_INTERNAL_H
 
 
 #include <DotCVM/utils/types.h>
+#include <DotCVM/devices/instructions.h>
 
 struct Reg8
 {
@@ -14,6 +15,10 @@ struct Reg8
     Reg8();
     Reg8(byte val);
     Reg8 operator=(byte val);
+    Reg8 operator+=(byte val);
+    Reg8 operator-=(byte val);
+    Reg8 operator*=(byte val);
+    Reg8 operator/=(byte val);
     operator byte();
     bool operator[](byte offset);
     void operator()(byte offset, bool val);
@@ -35,6 +40,10 @@ struct Reg16
     Reg16();
     Reg16(word val);
     Reg16 operator=(word val);
+    Reg16 operator+=(word val);
+    Reg16 operator-=(word val);
+    Reg16 operator*=(word val);
+    Reg16 operator/=(word val);
     operator word();
     bool operator[](byte offset);
     void operator()(byte offset, bool val);
@@ -63,6 +72,8 @@ struct Reg32
     Reg32 operator=(dword val);
     Reg32 operator+=(dword val);
     Reg32 operator-=(dword val);
+    Reg32 operator*=(dword val);
+    Reg32 operator/=(dword val); 
     operator dword();
     void operator()(byte offset, bool val);
     bool operator[](byte offset);

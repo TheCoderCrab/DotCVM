@@ -1,12 +1,13 @@
-#ifndef CPU_H
-#define CPU_H
+#ifndef CPU_INTERNAL_H
+#define CPU_INTERNAL_H
 
 #include <DotCVM/devices/reg_internal.h>
 #include <DotCVM/devices/instructions.h>
+#include <stdint.h>
 
 class CPU
 {
-private:
+public:
     // General purpose: 0X0XH
     Reg32     a;
     Reg32     b;
@@ -24,8 +25,8 @@ private:
     Reg16    ds; // DATA segment descriptor
     Reg16    ss; // STACK segment descriptor
     Reg16    cs; // CODE segment descriptor
-    Reg32  memr; // Holds the address to be read from memory
-
+    Reg32 memr0; // Holds the address to be read from memory for arg0
+    Reg32 memr1; // Holds the address to be read from memory for arg1
 
     // Interrupts: 2X0XH
     Reg32   irp; // Interrupt return pointer
@@ -54,6 +55,10 @@ private:
     // Security: 6X0XH
     Reg8    cpl; // Current privilege level
 
+    // NULL registers: returned when given an invalid id
+    Reg8    nullreg8;
+    Reg16   nullreg16;
+    Reg32   nullreg32;
 
     // Devices
     Memory*         m_Mem;
@@ -63,7 +68,6 @@ private:
     Mouse*          m_Mouse;
     DebugConsole*   m_DebugConsole;
 
-public:
     CPU(uint32_t memSize, uint32_t sriveSizeIfNotExist);
     ~CPU();
 
@@ -76,10 +80,16 @@ public:
     Mouse&          mouse();
     DebugConsole&   debugConsole();
 
-    Argument        arg(byte argPosition); // Returns argument data of the argument at (ip + 1) position <argPosition>
-    ArgumentType    argType(byte argPosition); // Returns argument type of the argument at (ip + 1) position <argPosition>
-    
+    byte            instruction(); // Returns the instruction at ip
+    Argument        arg     (byte argPosition); // Returns argument data of the argument at (ip + 1) position <argPosition>
+    ArgumentType    argType (byte argPosition); // Returns argument type of the argument at (ip + 1) position <argPosition>
+    Reg8&           reg8    (byte id         );
+    Reg16&          reg16   (byte id         );
+    Reg32&          reg32   (byte id         );
+    byte            regSize (byte id         );
 
+    bool            execute(); // Executes the instruction pointed to by register ip
+                               // Returns wether or not to move ip to the next instruction
     
     // Instructions
     // Returns wether or not register ip should be set to next instruction,
@@ -92,109 +102,90 @@ public:
 
     // Data management: 1XXXH
     // set: 10XXH
-    template<typename T = dword> bool set(T& dest, T val)
-    {
-        dest = val;
-        return true;
-    }
+    bool set(Argument dest, Argument val);
     // push: 11XXH
-    template<typename T = dword> bool push(T val)
-    {
-        mem().at<T>(sp) = val;
-        sp += sizeof(T);
-        return true;
-    }
+    bool push(Argument val);
     // pop: 12XXH
-    template<typename T = dword> bool pop(T& val)
-    {
-        sp -= sizeof(T);
-        val = mem().at<T>(sp);
-        return true;
-    }
+    bool pop(Argument val);
     // lgdtr: 13XXH
-    bool lgdtr(address adr);
+    bool lgdtr(Argument adr);
     // sgdtr: 14XXH
-    bool sgdtr(address adr);
+    bool sgdtr(Argument adr);
     // lds: 15XXH
-    bool lds(word val);
+    bool lds(Argument val);
     // lcs: 16XXH
-    bool lcs(word val);
+    bool lcs(Argument val);
     // lss: 17XXH
-    bool lss(word val);
+    bool lss(Argument val);
     // sds: 18XXH
-    bool sds(word& ctnr);
+    bool sds(Argument ctnr);
     // scs: 19XXH
-    bool scs(word& ctnr);
+    bool scs(Argument ctnr);
     // sss: 18XXH
-    bool sss(word& ctnr);
+    bool sss(Argument ctnr);
 
     //Interrupts: 2XXXH
     // lihp: 21XXH
-    bool lihp(dword val);
+    bool lihp(Argument val);
     // sihp: 22XXH
-    bool sihp(dword& ctnr);
+    bool sihp(Argument ctnr);
     // int: 23XXH
-    bool intr(byte intCode, bool hardwareInterrupt);
+    bool intr(Argument intCode, bool hardwareInterrupt);
     // iret: 24XXH
     bool iret();
 
     // Arithmetic and logic: 3XXXH
     // not: 30XXH
-    bool not_(dword& result, dword operand);
-    bool not_(dword& operand);
+    bool not_(Argument result, Argument operand);
+    bool not_(Argument operand);
     // add: 31XXH
-    bool add(dword& op1, dword op2);
+    bool add(Argument op1, Argument op2);
     // sub: 32XXH
-    bool sub(dword& op1, dword op2);
+    bool sub(Argument op1, Argument op2);
     // mul: 33XXH
-    bool mul(dword& op1, dword op2);
+    bool mul(Argument op1, Argument op2);
     // div: 34XXH
-    bool div(dword& op1, dword op2);
+    bool div(Argument op1, Argument op2);
     // fadd: 31XXH
-    bool fadd(float& op1, float op2);
+    bool fadd(Argument op1, Argument op2);
     // fsub: 32XXH
-    bool fsub(float& op1, float op2);
+    bool fsub(Argument op1, Argument op2);
     // fmul: 33XXH
-    bool fmul(float& op1, float op2);
+    bool fmul(Argument op1, Argument op2);
     // fdiv: 34XXH
-    bool fdiv(float& op1, float op2);
+    bool fdiv(Argument op1, Argument op2);
 
     // Execution flow: 4XXXH
     // jmp: 40XXH
-    bool jmp(address adr);
+    bool jmp(Argument adr);
     // call: 41XXH
-    bool call(address adr);
+    bool call(Argument adr);
     // cmp: 42XXH | fcmp: 43XXH | ucmp: 44XXH
-    template<typename T> bool cmp(T op1, T op2)
-    {
-        f(0, op1 > op2);
-        f(1, a < b);
-        return true;
-    }
+    bool cmp(Argument op1, Argument op2);
     // je: 46XXH | jz: 47XXH | jg: 48XXH | jl: 49XXH | jeg: 4AXXH | jel: 4BXXH | jiof: 4CXXH
-    bool joc(address adr, bool c); // Jump on condition
+    bool joc(Argument adr, bool c); // Jump on condition
     // ret: 4DXXH
     bool ret();
     // hlt: 4EXXH
     bool hlt();
     // sleep: 4FXXH
-    bool sleep(uint32_t time);
+    bool sleep(Argument time);
     // Control: 5XXXH
     //Not defined yet
 
     // Security: 6XXXH
     // lcpl: 60XXH
-    bool lcpl(byte ncpl);
+    bool lcpl(Argument ncpl);
     // scpl: 61XXH
-    bool scpl(byte& ctn);
+    bool scpl(Argument ctn);
     // Arithmetic and logic 2: 7XXH
-    bool intg(dword& op1, float op2);
-    bool ifloat(float& op1, dword op2);
+    bool intg(Argument op1, Argument op2);
+    bool ifloat(Argument op1, Argument op2);
     // IO: 8XXXH
     // out: 80XXH
-    bool out(dword adr, dword code);
+    bool out(Argument adr, Argument code);
     // in: 81XXH
-    bool in(dword adr, dword& ret);
+    bool in(Argument adr, Argument ret);
 };
 
 #endif
