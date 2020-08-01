@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12.4)
 
 project(dotcvm)
 
-file(GLOB_RECURSE SRC_FILES "src/dotcvm/*.cpp")
+file(GLOB_RECURSE SRC_FILES "dotcvm/src/*.cpp")
 
 add_executable(dotcvm ${SRC_FILES})
 
@@ -19,7 +19,7 @@ endif(DEBUG)
 
 set_property(TARGET dotcvm PROPERTY CXX_STANDARD 20)
 
-include_directories("include/")
+include_directories("dotcvm/include/")
 
 message(${CMAKE_DL_LIBS})
 target_link_libraries(dotcvm ${CMAKE_DL_LIBS})
