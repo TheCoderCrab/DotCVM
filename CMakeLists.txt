@@ -15,11 +15,11 @@ else()
 message("Building in release mode")
 set(CMAKE_BUILD_TYPE Release)
 add_compile_definitions(RELEASE) # Thoug never used
-endif()
+endif(DEBUG)
 
-set_property(TARGET dotcvm PROPERTY CXX_STANDARD 17)
+set_property(TARGET dotcvm PROPERTY CXX_STANDARD 20)
 
 include_directories("include/")
 
-
-target_link_libraries(dotcvm)
+message(${CMAKE_DL_LIBS})
+target_link_libraries(dotcvm ${CMAKE_DL_LIBS})
