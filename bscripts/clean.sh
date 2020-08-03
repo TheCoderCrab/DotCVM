@@ -4,3 +4,4 @@
 
 bscripts/clean_debug.sh
 bscripts/clean_release.sh
+bscripts/clean_modules.sh

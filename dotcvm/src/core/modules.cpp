@@ -2,10 +2,13 @@
 #include <dotcvm/utils/log.hpp>
 #include <dotcvm/utils/config.hpp>
 #include <dotcvm/utils/string.hpp>
+#include <dotcvm/main.hpp>
 #include <vector>
 #include <filesystem>
 #include <dlfcn.h>
 #include <sstream>
+
+device_ptr get_device(uint);
 
 static std::vector<module> s_modules;
 
@@ -15,6 +18,27 @@ static std::vector<module*> s_modules_normal;
 static std::vector<module*> s_modules_last;
 
 static module s_null_module;
+
+static module* s_clocking_module; // The module that is being update
+
+static dotcvm_data s_dotcvm_data = 
+{
+    .fp_shutdown = shutdown,
+    .fp_get_device = get_device,
+    .fp_read_module_config = read_module_config,
+    .fp_config_get_bool = config_get_bool,
+    .fp_config_get_uint = config_get_uint,
+    .fp_config_get_int = config_get_int,
+    .fp_config_get_ulong = config_get_ulong,
+    .fp_config_get_long = config_get_long,
+    .fp_config_get_string = config_get_string,
+    .fp_config_get_bool_array = config_get_bool_array,
+    .fp_config_get_uint_array = config_get_uint_array,
+    .fp_config_get_int_array = config_get_int_array,
+    .fp_config_get_ulong_array = config_get_ulong_array,
+    .fp_config_get_long_array = config_get_long_array,
+    .fp_config_get_string_array = config_get_string_array
+};
 
 static void remove_modules(std::vector<module*>& modules_to_remove)
 {
@@ -71,7 +95,7 @@ void load_modules()
     for(auto& entry : std::filesystem::directory_iterator(MODULES_DIR))
         if(entry.is_directory() && std::filesystem::exists(entry.path().string().append("/device.dpf")))
         {
-            s_modules.push_back(module{.uid = uid_count, .config = read_config_file(entry.path().string().append("/device.dpf"))});
+            s_modules.push_back(module{.module_folder = entry.path().string(), .uid = uid_count, .config = read_config_file(entry.path().string().append("/device.dpf"))});
             uid_count++;
             log("Found module at: " << entry.path().string().append("/device.dpf"));
         }
@@ -115,8 +139,7 @@ void load_modules()
         for(module& m : s_modules)
         {
             std::stringstream file_path_stream;
-            file_path_stream << "modules/lib/";
-            file_path_stream << m.lib_file;
+            file_path_stream << m.module_folder << "/" << m.lib_file;
 #ifdef __linux__
             file_path_stream << ".linux.so"; 
 #endif
@@ -124,29 +147,29 @@ void load_modules()
             file_path_stream << ".win.so";
 #endif
 #ifdef __APPLE__
-            file_path_stream << ".mac.so";
+            file_path_stream << ".apple.so";
 #endif
             debug(m.name << ":" << m.id << ", lib file = " << file_path_stream.str().c_str());
             m.lib_handle = dlopen(file_path_stream.str().c_str(), RTLD_LAZY);
             if(m.lib_handle != nullptr)
             {
                 dlerror(); // Make sure that there is no error waiting to be displayed
-                m.fp_create_device = (device_ptr(*)())(dlsym(m.lib_handle, "create_device"));
+                m.fp_create_device = (device_ptr(*)(dotcvm_data))(dlsym(m.lib_handle, "module_create_device"));
                 if(dlerror() != nullptr)
                 {
                     warn("Cannot load module named: " << m.name << " with id: " << m.id << ". Can't load create_device function.");
                     modules_to_remove.push_back(&m);   
                 }
-                m.fp_destroy_device = (void(*)(device_ptr))(dlsym(m.lib_handle, "destroy_device"));
+                m.fp_destroy_device = (void(*)(device_ptr))(dlsym(m.lib_handle, "module_destroy_device"));
                 if(dlerror() != nullptr)
                 {
                     warn("Cannot load module named: " << m.name << " with id: " << m.id << ". Can't load destroy_device(device_ptr) function.");
                     modules_to_remove.push_back(&m);   
                 }
-                m.fp_report     = (void(*)(uint,uint))  (dlsym(m.lib_handle, "report"));
-                m.fp_pre_clock  = (void(*)())           (dlsym(m.lib_handle, "pre_clock"));
-                m.fp_clock      = (void(*)())           (dlsym(m.lib_handle, "clock"));
-                m.fp_post_clock = (void(*)())           (dlsym(m.lib_handle, "post_clock"));
+                m.fp_report     = (void(*)(uint,uint))  (dlsym(m.lib_handle, "module_report"));
+                m.fp_pre_clock  = (void(*)())           (dlsym(m.lib_handle, "module_pre_clock"));
+                m.fp_clock      = (void(*)())           (dlsym(m.lib_handle, "module_clock"));
+                m.fp_post_clock = (void(*)())           (dlsym(m.lib_handle, "module_post_clock"));
             }
             else
             {
@@ -194,22 +217,48 @@ void load_modules()
                 s_modules_last.push_back(&m);
         }
         for(module_report& r : modules_reports)
+        {
+            s_clocking_module = r.target_module;
             r.target_module->report(r.additional_data0, r.additional_data1);
+        }
         for(module& m : s_modules)
+        {
+            s_clocking_module = &m;
             m.create_device();
+        }
     }
 }
 
 void clock_modules()
 {
     for(module* m : s_modules_first)
+    {
+        s_clocking_module = m;
         m->pre_clock();
+    }
     for(module* m : s_modules_normal)
+    {
+        s_clocking_module = m;
         m->clock();
+    }
     for(module* m : s_modules_last)
+    {
+        s_clocking_module = m;
         m->post_clock();
+    }
     for(module* m : s_modules_cpus)
+    {
+        s_clocking_module = m;
         m->clock();
+    }
+}
+
+device_ptr get_device(uint requested_device)
+{
+    for(uint connection : s_clocking_module->actual_connections)
+        if(connection == requested_device)
+            return get_module(connection).p_device;
+    return nullptr;
 }
 
 void unload_modules()
@@ -221,6 +270,11 @@ void unload_modules()
     }
 }
 
+config read_module_config(std::string config_file)
+{
+    return config(s_clocking_module->module_folder.append("/").append(config_file));
+}
+
 void module::report(uint additional_data0, uint additional_data1)
 {
     if(fp_report != nullptr)
@@ -229,7 +283,7 @@ void module::report(uint additional_data0, uint additional_data1)
 void module::create_device()
 {
     if(fp_create_device != nullptr)
-        p_device = fp_create_device();
+        p_device = fp_create_device(s_dotcvm_data);
 }
 void module::pre_clock()
 {

@@ -1,0 +1,7 @@
+id=0xDC57D3E3
+name=std-memory
+lib_file=std_mem
+clock_mode=3
+connection_mode=0
+require=[]
+connect_to=[0xDC57D10B]

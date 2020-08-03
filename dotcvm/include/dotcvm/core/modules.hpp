@@ -14,6 +14,7 @@ enum module_connection_mode { AGREEMENT, ACCEPT_ALL, DECLINE_ALL };
 
 struct module
 {
+    std::string                         module_folder       ;
     uint                                uid;
     std::map<std::string, std::string>  config              ;
     void*                               lib_handle          = nullptr;
@@ -28,7 +29,7 @@ struct module
     device_ptr                          p_device            ;
 
     void        (*fp_report)            (uint additional_data0, uint additional_data1);
-    device_ptr  (*fp_create_device)     ();
+    device_ptr  (*fp_create_device)     (dotcvm_data d);
     void        (*fp_pre_clock)         ();
     void        (*fp_clock)             ();
     void        (*fp_post_clock)        ();

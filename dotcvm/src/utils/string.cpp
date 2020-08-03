@@ -72,7 +72,7 @@ std::vector<uint> string_to_uint_array(std::string& str)
     {
         try
         {
-            arr.push_back((uint) std::stoi(s, nullptr, 0));
+            arr.push_back((uint) std::stol(s, nullptr, 0));
         }
         catch(const std::invalid_argument& e)
         {
@@ -81,9 +81,79 @@ std::vector<uint> string_to_uint_array(std::string& str)
         }
         catch(const std::out_of_range& e)
         {
-            warn("The given integer is too large to be processed");
+            warn("The given integer is too large to be processed: " << s);
             return std::vector<uint>();
         }
     }
     return arr;
+}
+
+std::vector<std::string> string_to_string_array(std::string& str)
+{
+    trim(str);
+    if(str[0] != '[' || str[str.size() - 1] != ']')
+    {
+        warn("The given string doesn't represent an array");
+        return std::vector<std::string>();
+    }
+    str.erase(str.begin());
+    str.erase(str.end() - 1);
+    return split(str, ',');
+}
+
+bool stob(std::string str, bool default_value)
+{
+    if(str == "true" || str == "on" || str == "yes" || str == "y" || str == "1")
+        return true;
+    if(str == "false" || str == "off" || str == "no" || str == "n" || str == "0")
+        return false;
+    return default_value;
+}
+uint stoui(std::string str, uint default_value)
+{
+    try
+    {
+        return (uint) std::stoi(str, nullptr, 0);
+    }
+    catch(const std::exception& e)
+    {
+        return default_value;
+    }
+    
+}
+int  stoi(std::string str, int default_value)
+{
+    try
+    {
+        return std::stoi(str, nullptr, 0);
+    }
+    catch(const std::exception& e)
+    {
+        return default_value;
+    }
+    
+}
+ulong stoul(std::string str, ulong default_value)
+{
+    try
+    {
+        return (uint) std::stoul(str, nullptr, 0);
+    }
+    catch(const std::exception& e)
+    {
+        return default_value;
+    }
+    
+}
+long int stol(std::string str, long int default_value)
+{
+    try
+    {
+        return (uint) std::stol(str, nullptr, 0);
+    }
+    catch(const std::exception& e)
+    {
+        return default_value;
+    }
+    
 }

@@ -1,4 +1,5 @@
 .vscode/
 build/debug
 build/release
+build/modules
 CMakeLists.txt.user

@@ -1,5 +1,5 @@
 #include <dotcvm/utils/log.hpp>
-#include <dotcvm/dotcvm.hpp>
+#include <dotcvm/main.hpp>
 #include <csignal>
 
 #ifdef DEBUG
@@ -8,14 +8,12 @@ void signal_handler(int sig_num)
     debug("Caught signal: " << sig_num);
     if(sig_num == SIGINT)
     {
-        log("Program interrupted");
-        exit(SIGINT);
-        // TODO: shutdown
+        shutdown(SIGINT, "Program Interrupted");
         return;
     }
     if(sig_num == SIGSEGV)
     {
-        shutdown(SIGSEGV, "Memory error: Please report error");
+        exit(SIGSEGV);
         return;
     }
     debug("Unhandled signal, ignoring it");

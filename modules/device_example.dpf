@@ -1,0 +1,37 @@
+id=0x00000001
+# name : module name(useless for now)
+# default = <unknown>
+name=example
+# lib_file : the file that should contain the module logic
+# the file should be at the following paths depending on the plateform
+# linux: modules/lib/<lib_file>.linux.so
+# windows: modules/lib/<lib_file>.win.so
+# apple: modules/lib/<lib_file>.apple.so
+# defaulr = device
+lib_file=device_example
+# clock modes:
+# 0  = NEVER
+# 1  = FIRST
+# 2  = CPU
+# 3  = NORMAL
+# 4  = LAST
+# 5  = FIRST_CPU
+# 6  = FIRST_NORMAL
+# 7  = FIRST_LAST
+# 8  = CPU_LAST
+# 9  = NORMAL_LAST
+# 10 = ALL
+# default = 3
+clock_mode=3
+# connection modes:
+# 0 = AGREEMENT
+# 1 = ACCEPT_ALL
+# 2 = DECLINE_ALL
+# default = 0
+connection_mode=0
+# require: a list of module ids that must exist for this module to be loaded
+# default = []
+require=[]
+# connect_to: a list of module ids that this module will be able to get their device pointer
+# default = []
+connect_to=[]

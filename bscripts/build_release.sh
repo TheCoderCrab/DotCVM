@@ -4,7 +4,7 @@
 
 echo -e "\e[1m\e[32mBuilding in release mode\e[0m\e[39m"
 
-cmake -S . -B build/release -DDEBUG=0
+cmake -S . -B build/release
 
 cd build/release
 make
