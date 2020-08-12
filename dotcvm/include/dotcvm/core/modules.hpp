@@ -12,6 +12,8 @@
 enum module_clock           { NEVER, FIRST, CPU, NORMAL, LAST, FIRST_CPU, FIRST_NORMAL, FIRST_LAST, CPU_LAST, NORMAL_LAST, ALL };
 enum module_connection_mode { AGREEMENT, ACCEPT_ALL, DECLINE_ALL };
 
+enum module_current_job { CREATE, INIT, PRE_CLOCK, CLOCK, POST_CLOCK, DESTROY };
+
 struct module
 {
     std::string                         module_folder       ;
@@ -28,19 +30,21 @@ struct module
     std::vector<uint>                   actual_connections  ;
     device_ptr                          p_device            ;
 
-    void        (*fp_report)            (uint additional_data0, uint additional_data1);
-    device_ptr  (*fp_create_device)     (dotcvm_data d);
-    void        (*fp_pre_clock)         ();
-    void        (*fp_clock)             ();
-    void        (*fp_post_clock)        ();
-    void        (*fp_destroy_device)    (device_ptr device);
+    void        (*fp_report         )    (uint additional_data0, uint additional_data1);
+    device_ptr  (*fp_create_device  )    (dotcvm_data d                               );
+    void        (*fp_init           )    (                                            );
+    void        (*fp_pre_clock      )    (uint cycles                                 );
+    void        (*fp_clock          )    (uint cycles                                 );
+    void        (*fp_post_clock     )    (uint cycles                                 );
+    void        (*fp_destroy_device )    (device_ptr device                           );
 
-    void        report(uint additional_data0, uint additional_data1);
-    void        create_device   ();
-    void        pre_clock       ();
-    void        clock           ();
-    void        post_clock      ();
-    void        destroy_device  ();
+    void        report          (uint additional_data0, uint additional_data1);
+    void        create_device   (                                            );
+    void        init            (                                            );
+    void        pre_clock       (uint cycles                                 );
+    void        clock           (uint cycles                                 );
+    void        post_clock      (uint cycles                                 );
+    void        destroy_device  (                                            );
 };
 
 struct module_report
@@ -53,5 +57,7 @@ struct module_report
 extern void load_modules();
 extern void clock_modules();
 extern void unload_modules();
+extern uint module_count();
+extern std::string get_module_error();
 
 #endif /* DC_MODULES_H */

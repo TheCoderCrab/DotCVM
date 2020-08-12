@@ -1,0 +1,7 @@
+id=0xDC57D10B
+name=std-io-bus
+lib_file=standard_io_bus
+clock_mode=0
+connection_mode=1
+require=[]
+connect_to=[]

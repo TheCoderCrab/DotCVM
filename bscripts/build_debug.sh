@@ -8,3 +8,9 @@ cmake -S . -B build/debug -DDEBUG=1
 
 cd build/debug
 make
+
+export EXIT_CODE=$?
+
+cp dotcvm run/dotcvm
+
+exit $EXIT_CODE

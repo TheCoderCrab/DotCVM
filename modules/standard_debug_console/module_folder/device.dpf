@@ -1,0 +1,7 @@
+id=0xDC57DDBC
+name=std-debug-console
+lib_file=standard_debug_console
+clock_mode=4
+connection_mode=0
+require=[0xDC57D10B]
+connect_to=[0xDC57D10B]

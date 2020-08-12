@@ -1,0 +1,7 @@
+id=0xDC57D17B
+name=std-interrupt-bus
+lib_file=standard_interrupt_bus
+clock_mode=0
+connection_mode=1
+require=[]
+connect_to=[]

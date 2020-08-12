@@ -23,7 +23,7 @@ std::map<std::string, std::string> read_config_file(std::string file_path)
         }
     }
     else
-        warn("Can't open config file for reading: " << file_path);
+        WARN_M("Can't open config file for reading: " << file_path);
     return config;
 }
 

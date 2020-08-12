@@ -1,7 +1,7 @@
 id=0xDC57D3E3
 name=std-memory
-lib_file=std_mem
+lib_file=standard_memory
 clock_mode=3
 connection_mode=0
-require=[]
-connect_to=[0xDC57D10B]
+require=[0xDC57DC94]
+connect_to=[0xDC57DC94, 0xDC57D10B, 0xDC57D17B]

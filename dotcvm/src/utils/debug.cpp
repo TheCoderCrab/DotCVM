@@ -1,28 +1,33 @@
 #include <dotcvm/utils/log.hpp>
 #include <dotcvm/main.hpp>
+#include <dotcvm/core/modules.hpp>
 #include <csignal>
 
-#ifdef DEBUG
 void signal_handler(int sig_num)
 {
-    debug("Caught signal: " << sig_num);
+    DEBUG_M("Caught signal: " << sig_num);
     if(sig_num == SIGINT)
     {
         shutdown(SIGINT, "Program Interrupted");
         return;
     }
-    if(sig_num == SIGSEGV)
+    if(sig_num == SIGQUIT)
+        DEBUG_M("Quitting");
+    if(sig_num == SIGSEGV) 
     {
+        WARN_M("Critical error caugth: SIGSEGV");
+        WARN_M(get_module_error());
         exit(SIGSEGV);
         return;
     }
-    debug("Unhandled signal, ignoring it");
+    WARN_M("Unhandled signal, ignoring it");
 }
-#endif
+
 void setup_signal_handler()
 {
+    std::signal(SIGINT , signal_handler);
+    std::signal(SIGQUIT, signal_handler);
 #ifdef DEBUG
-    signal(SIGINT , signal_handler);
-    signal(SIGSEGV, signal_handler);
+    std::signal(SIGSEGV, signal_handler);
 #endif
 }

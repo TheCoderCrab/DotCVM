@@ -3,8 +3,11 @@
 
 #include <cstdint>
 
-#define DC_STR_MEM                  0xDC57D3E3
-#define MEMORY_DEFAULT_SIZE         (50 * 1024 * 1024)
+#define DC_STD_MEM                  0xDC57D3E3
+#define MEMORY_DEFAULT_SIZE         (64 * 1024 * 1024)
+
+#define WRITE_MEM(a, d, m, i)       i->address = a; i->data = d; i->mode = memory_mode::m; i->write = true  
+#define READ_MEM(a, m, i)           i->address = a; i->mode = memory_mode::m; i->write = false
 
 enum memory_mode {  BYTE  = 1,
                     WORD  = 2,

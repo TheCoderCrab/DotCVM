@@ -60,13 +60,13 @@ std::vector<uint> string_to_uint_array(std::string& str)
     remove_any(str, '\t');
     if(str[0] != '[' || str[str.size() - 1] != ']')
     {
-        warn("The given string doesn't represent an array");
+        DEBUG_M("The given string doesn't represent an array");
         return std::vector<uint>();
     }
     str.erase(str.begin());
     str.erase(str.end() - 1);
     std::vector<std::string> string_splited = split(str, ',');
-    debug("splited: " << vector_to_string<std::string>(string_splited));
+    DEBUG_M("splited: " << vector_to_string<std::string>(string_splited));
     std::vector<uint> arr;
     for(std::string s : string_splited)
     {
@@ -76,12 +76,12 @@ std::vector<uint> string_to_uint_array(std::string& str)
         }
         catch(const std::invalid_argument& e)
         {
-            warn("The string:" << s << " doesn't represent an integer");
+            DEBUG_M("The string:" << s << " doesn't represent an integer");
             return std::vector<uint>();
         }
         catch(const std::out_of_range& e)
         {
-            warn("The given integer is too large to be processed: " << s);
+            DEBUG_M("The given integer is too large to be processed: " << s);
             return std::vector<uint>();
         }
     }
@@ -93,7 +93,7 @@ std::vector<std::string> string_to_string_array(std::string& str)
     trim(str);
     if(str[0] != '[' || str[str.size() - 1] != ']')
     {
-        warn("The given string doesn't represent an array");
+        DEBUG_M("The given string doesn't represent an array");
         return std::vector<std::string>();
     }
     str.erase(str.begin());

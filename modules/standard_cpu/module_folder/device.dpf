@@ -1,0 +1,7 @@
+id=0xDC57DC94
+name=std-cpu
+lib_file=standard_cpu
+clock_mode=2
+connection_mode=0
+require=[0xDC57D3E3]
+connect_to=[0xDC57D3E3, 0xDC57D10B, 0xDC57D17B]

@@ -3,14 +3,14 @@
 
 #include <iostream>
 
-#define log(s) std::cout << s << '\n'
-#define warn(s) std::cout << "WARNING: " << s << '\n';
-#define err(s) std::cerr << "ERROR: FILE: " << __FILE__ << ", LINE: " << __LINE__ << ", MESSAGE: " << s << '\n';
+#define LOG_M(s) std::cout << s << '\n'
+#define WARN_M(s) std::cout << "WARNING: " << s << '\n';
+#define ERR_M(s) std::cerr << "ERROR: FILE: " << __FILE__ << ", LINE: " << __LINE__ << ", MESSAGE: " << s << '\n';
 
 #ifdef DEBUG
-#define debug(s) std::cout << "DEBUG: " << s << '\n'
+#define DEBUG_M(s) std::cout << "DEBUG: " << s << '\n'
 #else
-#define debug(s) do{}while(0)
+#define DEBUG_M(s) do{}while(0)
 #endif
 
 #endif /* DC_LOG_H */

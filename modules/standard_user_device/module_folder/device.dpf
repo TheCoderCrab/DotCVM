@@ -1,0 +1,7 @@
+id=0xDC57D4D4
+name=std-user-device
+lib_file=standard_user_device
+clock_mode=7
+connection_mode=0
+require=[]
+connect_to=[0xDC57D10B, 0xDC57D17B]

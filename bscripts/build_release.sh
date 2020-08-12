@@ -8,3 +8,11 @@ cmake -S . -B build/release
 
 cd build/release
 make
+
+
+export EXIT_CODE=$?
+
+cp dotcvm run/dotcvm
+
+exit $EXIT_CODE
+

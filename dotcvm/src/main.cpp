@@ -16,17 +16,23 @@ void shutdown(uint exit_code, std::string message)
 
 int main()
 {    
-    log("Starting dotcvm");
+    LOG_M("Starting dotcvm");
     setup_signal_handler();
-    log("Loading modules");
+    LOG_M("Loading modules");
     load_modules();
-    log("Modules loaded");
+    LOG_M("Modules loaded");
+    LOG_M("Loaded a total of: " << module_count() << " modules");
+    if(module_count() == 0)
+        shutdown(0, "Sir, please add some modules/devices, the dotcvm has no purpose if it is being used without any modules(try to turn on an empty computer case to see why)");
     while(!s_shutdown)
+    {
         clock_modules();
-    log("Shutting down");
-    log("Unloading modules");
+        std::cin.get();
+    }
+    LOG_M("Shutting down");
+    LOG_M("Unloading modules");
     unload_modules();
-    log(s_exit_message);
-    log("Bye");
+    LOG_M(s_exit_message);
+    LOG_M("Bye");
     return s_exit_code;
 }
