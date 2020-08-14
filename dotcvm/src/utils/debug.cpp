@@ -11,6 +11,8 @@ void signal_handler(int sig_num)
         shutdown(SIGINT, "Program Interrupted");
         return;
     }
+    if(sig_num == SIGTRAP)
+        return; // just return probably a breakpoint
     if(sig_num == SIGQUIT)
         DEBUG_M("Quitting");
     if(sig_num == SIGSEGV) 
@@ -27,6 +29,7 @@ void setup_signal_handler()
 {
     std::signal(SIGINT , signal_handler);
     std::signal(SIGQUIT, signal_handler);
+    std::signal(SIGTRAP, signal_handler);
 #ifdef DEBUG
     std::signal(SIGSEGV, signal_handler);
 #endif

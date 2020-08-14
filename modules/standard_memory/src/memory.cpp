@@ -31,6 +31,28 @@ __export device_ptr module_create_device(dotcvm_data d)
     s_size = d.fp_config_get_uint(c, "size", MEMORY_DEFAULT_SIZE);
     DEBUG_M("Memory size: " << s_size << ",MB: " << s_size / 1024 / 1024);
     s_data = new uint8_t[s_size];
+#ifdef DEBUG
+    uint a = 0;
+#define PUT_B(b) s_data[a] = b; a += 1
+    PUT_B(0x20);
+    PUT_B(0x30);
+    PUT_B(0x10);
+    PUT_B(0x10);
+    PUT_B(0x63);
+    PUT_B(0x01);
+    PUT_B(0xFF);
+    PUT_B(0x22);
+    PUT_B(0x30);
+    PUT_B(0x01);
+    PUT_B(0x4C);
+    a = 0x10;
+    PUT_B(0x10);
+    PUT_B(63);
+    PUT_B(0x00);
+    PUT_B(0x01);
+    PUT_B(0x23);
+#undef PUT_B
+#endif /* DEBUG */
     DEBUG_M("Memory allocated");
     if(s_size < 64 * 1024 * 1024)
         WARN_M("Memory size is smaller than 64MB this will create problems if you are using the standard cpu");
@@ -68,15 +90,10 @@ __export void module_clock(uint cycles)
     }
     else
     {
-        DEBUG_M("Memory read mode");
         if(s_instance->mode == memory_mode::BYTE)
             s_instance->data = s_data[s_instance->address];
         else if(s_instance->mode == memory_mode::WORD)
-        {
-            DEBUG_M("Memory reading WORD at: " << s_instance->address);
-            DEBUG_M("word: " << *((uint16_t*)(&(s_data[s_instance->address]))) << ", byte0: " << (uint) s_data[s_instance->address] << ", byte1: " << (uint) s_data[s_instance->address + 1]);
             s_instance->data = *((uint16_t*)(&(s_data[s_instance->address])));
-        }
         else if(s_instance->mode == memory_mode::DWORD)
             s_instance->data = *((uint32_t*)(&(s_data[s_instance->address])));
     }
