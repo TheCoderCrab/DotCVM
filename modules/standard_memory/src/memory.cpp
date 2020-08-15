@@ -31,26 +31,25 @@ __export device_ptr module_create_device(dotcvm_data d)
     s_size = d.fp_config_get_uint(c, "size", MEMORY_DEFAULT_SIZE);
     DEBUG_M("Memory size: " << s_size << ",MB: " << s_size / 1024 / 1024);
     s_data = new uint8_t[s_size];
+// This is a test program
 #ifdef DEBUG
     uint a = 0;
 #define PUT_B(b) s_data[a] = b; a += 1
-    PUT_B(0x20);
-    PUT_B(0x30);
     PUT_B(0x10);
+    PUT_B(0x74);
     PUT_B(0x10);
-    PUT_B(0x63);
-    PUT_B(0x01);
     PUT_B(0xFF);
-    PUT_B(0x22);
-    PUT_B(0x30);
-    PUT_B(0x01);
-    PUT_B(0x4C);
-    a = 0x10;
+    PUT_B(17); //push
+    PUT_B(0x40);
+    PUT_B(10);
     PUT_B(0x10);
-    PUT_B(63);
+    PUT_B(0x74);
+    PUT_B(0x11);
+    PUT_B(0xFF);
+    PUT_B(0x10);
+    PUT_B(0x71);
     PUT_B(0x00);
-    PUT_B(0x01);
-    PUT_B(0x23);
+    PUT_B(0x4C);
 #undef PUT_B
 #endif /* DEBUG */
     DEBUG_M("Memory allocated");
@@ -101,6 +100,7 @@ __export void module_clock(uint cycles)
 
 __export void module_destroy_device(device_ptr i)
 {
+    DEBUG_M((uint) s_data[255]);
     delete s_instance;
     delete[] s_data;
 }

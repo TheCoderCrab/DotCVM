@@ -2,10 +2,10 @@
 #define DC_DEBUG_H
 
 #include <csignal>
-#include <dotcvm/utils/log.hpp>
+#include <iostream>
 
 #ifdef DEBUG
-#define BREAKPOINT(s) DEBUG_M(s); std::raise(SIGTRAP)
+#define BREAKPOINT(s) std::cout << "BREAKPOINT: " << s << '\n'; std::raise(SIGTRAP)
 #else
 #define BREAKPOINT(s)
 #endif
