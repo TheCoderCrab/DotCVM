@@ -35,20 +35,6 @@ __export device_ptr module_create_device(dotcvm_data d)
 #ifdef DEBUG
     uint a = 0;
 #define PUT_B(b) s_data[a] = b; a += 1
-    PUT_B(0x10);
-    PUT_B(0x74);
-    PUT_B(0x10);
-    PUT_B(0xFF);
-    PUT_B(17); //push
-    PUT_B(0x40);
-    PUT_B(10);
-    PUT_B(0x10);
-    PUT_B(0x74);
-    PUT_B(0x11);
-    PUT_B(0xFF);
-    PUT_B(0x10);
-    PUT_B(0x71);
-    PUT_B(0x00);
     PUT_B(0x4C);
 #undef PUT_B
 #endif /* DEBUG */
@@ -100,7 +86,9 @@ __export void module_clock(uint cycles)
 
 __export void module_destroy_device(device_ptr i)
 {
-    DEBUG_M((uint) s_data[255]);
+#ifdef DEBUG
+    DEBUG_M((uint) s_data[0xFF]);
+#endif /* DEBUG */
     delete s_instance;
     delete[] s_data;
 }

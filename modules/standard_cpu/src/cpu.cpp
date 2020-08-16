@@ -34,8 +34,12 @@ enum arg_type { DISABLED, MEMORY8, MEMORY16, MEMORY32, LITERAL8, LITERAL16, LITE
 enum instruction { NO_OP  = 0xFF,
                    CPUINF = 0x00,
                    SET    = 0x10,
-                   PUSH,
-                   POP,
+                   PUSH4,
+                   PUSH2,
+                   PUSH1,
+                   POP4,
+                   POP2,
+                   POP1,
                    LGDTR,
                    SGDTR,
                    LDS,
@@ -284,46 +288,21 @@ static void i_set()
     store_arg(arg0_a, arg0_type(), arg1);
     s_cycles = 0;
 }
-static void i_push()
+template<uint s> static void i_push()
 {
-    switch(arg0_type())
-    {
-    case arg_type::REG:
-    case arg_type::LITERAL32:
-    case arg_type::MEMORY32:
-        WRITE_MEM(s_adr(spr), arg0, DWORD, s_mem);
-        spr -= 4;
-        s_cycles = 0;
-        return;
-    case arg_type::LITERAL16:
-    case arg_type::MEMORY16:
-        WRITE_MEM(s_adr(spr), arg0, WORD, s_mem);
-        spr -= 2;
-        s_cycles = 0;
-        return;
-    case arg_type::LITERAL8:
-    case arg_type::MEMORY8:
-        WRITE_MEM(s_adr(spr), arg0, BYTE, s_mem);
-        spr -= 1;
-        s_cycles = 0;
-        return;
-    }
+    WRITE_MEM_E(s_adr(spr), arg0, (memory_mode) s, s_mem);
+    spr += s;
+    s_cycles = 0;
 }
-static void i_pop()
+template<uint s> static void i_pop()
 {
     switch(s_cycles)
     {
     case 1:
-        switch(arg0_type())
-        {
-        case arg_type::REG:
-        case arg_type::MEMORY32:
-        case arg_type::LITERAL32:
-            spr += 4;
-            READ_MEM(s_adr(spr), DWORD, s_mem);
-            s_cycles = 2;
-            return;
-        }
+        spr -= s;
+        READ_MEM_E(s_adr(spr), (memory_mode) s, s_mem);
+        s_cycles = 2;
+        return;
     case 2:
         store_arg(arg0_a, arg0_type(), s_mem->data);
         s_cycles = 0;
@@ -536,8 +515,12 @@ __export void module_clock(uint c)
 #define INSTRUCTION(i, f) case instruction::i: DEBUG_M("Instruction: " << #i << ", cycle: " << s_cycles); f(); return
                 INSTRUCTION(CPUINF  , i_cpuinf      );
                 INSTRUCTION(SET     , i_set         );
-                INSTRUCTION(PUSH    , i_push        );
-                INSTRUCTION(POP     , i_pop         );
+                INSTRUCTION(PUSH4   , i_push<4>     );
+                INSTRUCTION(PUSH2   , i_push<2>     );
+                INSTRUCTION(PUSH1   , i_push<1>     );
+                INSTRUCTION(POP4    , i_pop<4>      );
+                INSTRUCTION(POP2    , i_pop<2>      );
+                INSTRUCTION(POP1    , i_pop<1>      );
                 INSTRUCTION(LGDTR   , i_lgdtr       );
                 INSTRUCTION(SGDTR   , i_sgdtr       );
                 INSTRUCTION(LDS     , i_lseg<dsr>   );
@@ -558,11 +541,12 @@ __export void module_clock(uint c)
 __export void module_destroy_device(device_ptr i)
 {
     LOG_M("Cpu state: ");
-    LOG_M("\ta      : " << ar   <<  "\tb : " << br);
-    LOG_M("\tc      : " << cr   <<  "\td : " << dr);
-    LOG_M("\tds     : " << dsr  <<  "\tcs: " << csr << "\tss: " << ssr);
+    LOG_M("\ta      : " << ar   << "\tb : " << br);
+    LOG_M("\tc      : " << cr   << "\td : " << dr);
+    LOG_M("\tds     : " << dsr  << "\tcs: " << csr << "\tss: " << ssr);
+    LOG_M("\tsp     : " << spr  << "\tmemr0: " << memr0 << "\tmemr1: " << memr1);
     LOG_M("\tihp    : " << ihpr << "\tirp: " << irpr);
-    LOG_M("\tip     : " << ipr  <<  "\trp: " << rpr);
+    LOG_M("\tip     : " << ipr  << "\trp: " << rpr);
     LOG_M("\tGDTR   : offset: " << gdtr.offset << ", base: " << gdtr.address);
-    LOG_M("\tt      : " << tr   <<  "\tu : " << ur);
+    LOG_M("\tt      : " << tr   << "\tu : " << ur);
 }
