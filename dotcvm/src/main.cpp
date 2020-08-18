@@ -17,13 +17,17 @@ void shutdown(uint exit_code, std::string message)
 int main()
 {    
     LOG_M("Starting dotcvm");
+    std::cout << std::uppercase;
     setup_signal_handler();
     LOG_M("Loading modules");
     load_modules();
     LOG_M("Modules loaded");
     LOG_M("Loaded a total of: " << module_count() << " modules");
     if(module_count() == 0)
+    {
+        BREAKPOINT("There is no module");
         shutdown(0, "Sir, please add some modules/devices, the dotcvm has no purpose if it is being used without any modules(try to turn on an empty computer case to see why)");
+    }
     // BREAKPOINT("Program loop will start");
     while(!s_shutdown)
         clock_modules();

@@ -123,7 +123,7 @@ void update_xmain_window()
    }
    if(xevent_waiting(main_win.display, ClientMessage, event) && event.xclient.data.l[0] == s_WMDeleteWindowAtom)
    {
-      s_dc.fp_shutdown(0, "");
+      s_dc.fp_shutdown(0, "Window closed");
       return;
    }
 }
@@ -132,11 +132,11 @@ void close_xwindow(window_data window)
    XUnmapWindow(window.display, window.window);
    XDestroyWindow(window.display, window.window);
 }
-void closeXDisplay()
+void close_xdisplay()
 {
    XCloseDisplay(get_xdisplay());
 }
-void XSetPixel(window_data window, uint x, uint y, uint rgba)
+void set_xpixel(window_data window, uint x, uint y, uint rgba)
 {
    XSetForeground(window.display, DefaultGC(window.display, window.screen), rgba);
    XDrawPoint(window.display, window.window, DefaultGC(window.display, window.screen), x, y);
@@ -149,5 +149,5 @@ window_data  (*setup_main_window)      (std::string title, unsigned int width, u
 void         (*update_main_window)     ()                                                                = update_xmain_window;
 void         (*draw_pixel)             (window_data w, uint x, uint y, uint rgba)                        = draw_xpixel;
 void         (*close_window)           (window_data window)                                              = close_xwindow;
-void         (*close_display)          ()                                                                = closeXDisplay;
+void         (*close_display)          ()                                                                = close_xdisplay;
 #endif

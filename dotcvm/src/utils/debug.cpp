@@ -5,12 +5,12 @@
 
 void signal_handler(int sig_num)
 {
-    DEBUG_M("Caught signal: " << sig_num);
     if(sig_num == SIGINT)
     {
         shutdown(SIGINT, "Program Interrupted");
         return;
     }
+#ifndef GDB
     if(sig_num == SIGTRAP)
         return; // just return probably a breakpoint
     if(sig_num == SIGQUIT)
@@ -22,7 +22,7 @@ void signal_handler(int sig_num)
         exit(SIGSEGV);
         return;
     }
-    WARN_M("Unhandled signal, ignoring it");
+#endif /* GDB */
 }
 
 void setup_signal_handler()

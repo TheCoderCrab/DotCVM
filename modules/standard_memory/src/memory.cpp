@@ -34,9 +34,9 @@ __export device_ptr module_create_device(dotcvm_data d)
 // This is a test program
 #ifdef DEBUG
     uint a = 0;
-#define PUT_B(b) s_data[a] = b; a += 1
-    PUT_B(0x4C);
-#undef PUT_B
+#define B(b) s_data[a] = b; a += 1
+
+#undef B
 #endif /* DEBUG */
     DEBUG_M("Memory allocated");
     if(s_size < 64 * 1024 * 1024)
@@ -59,6 +59,9 @@ __export void module_init()
 
 __export void module_clock(uint cycles)
 {
+    if(s_use_io_bus)
+        if(sp_io_bus->address == DC_STD_MEM)
+            sp_io_bus->value = s_size;
     if(s_instance->address >= s_size)
     {
         WARN_M("Memory: tried to access an out of range memory location: " << s_instance->address << " while size is: " << s_size);

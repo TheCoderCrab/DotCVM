@@ -1,12 +1,10 @@
 #!/bin/sh
 
 export gdbinit_file="handle SIGINT pass nostop noprint
-handle SIGQUIT pass nostop noprint
-handle SIGSEGV pass nostop noprint
 run
 "
 
-./bscripts/build_debug.sh                                   && \
+./bscripts/build_debug.sh "$1"                              && \
 ./bscripts/build_module_debug.sh standard_cpu               && \
 ./bscripts/build_module_debug.sh standard_memory            && \
 ./bscripts/build_module_debug.sh standard_io_bus            && \
