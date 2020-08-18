@@ -190,7 +190,6 @@ static reg32& get_reg(uint8_t id)
     WARN_M("Invalid reg id: " << id << " returning the null_reg");
     return null_reg;
 }
-
 bool flag_on(flag f)
 {
     return (fr & (uint) f) != 0;
@@ -297,7 +296,6 @@ static uint float_as_uint(float f)
     u_f.f = f;
     return u_f.u;
 }
-
 static bool check_cpl(uint min)
 {
     if(cplr > min)
@@ -319,10 +317,10 @@ static void i_cpuinf()
 {
     if(arg0 == 0) // CPU vendor
     {
-        ar = bytes_to_uint('n', 'n', 'n', 'n');
-        br = bytes_to_uint('n', 'n', 'n', 'n');
-        cr = bytes_to_uint('n', 'n', 'n', 'n');
-        dr = bytes_to_uint('n', 'n', 'n', 'n');
+        ar = bytes_to_uint('-', 'd', 't', 's');
+        br = bytes_to_uint('-', 'u', 'p', 'c');
+        cr = bytes_to_uint('-', 'd', 't', 's');
+        dr = bytes_to_uint('.', 'u', 'p', 'c');
         s_cycles = 0;
     }
 }
