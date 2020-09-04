@@ -307,6 +307,7 @@ static bool check_cpl(uint min)
     return true;
 }
 
+static std::string s_bios_file_path;
 
 #define NCPL(n) if(!check_cpl(n)) return;
 #define UCPL    NCPL(get_user_defined_needed_cpl())
@@ -638,6 +639,12 @@ static void i_out()
 
 #pragma endregion
 
+static std::ifstream::pos_type file_size(const std::string& file_name)
+{
+    std::ifstream in(file_name, std::ifstream::ate | std::ifstream::binary);
+    return in.tellg(); 
+}
+
 __export void module_report(uint additional_data0, uint additional_data1)
 {
     if(additional_data0 == DC_CONNECTION_INAGREEMENT || additional_data0 == DC_CONNECTION_INEXISTANT)
@@ -657,6 +664,8 @@ __export void module_report(uint additional_data0, uint additional_data1)
 __export device_ptr module_create_device(dotcvm_data d)
 {
     DEBUG_M("Creating cpu");
+    config c = d.fp_read_module_config("conf.cfg");
+    s_bios_file_path = d.fp_config_get_string(c, "bios_file", "files/bios.bin");
     s_dc = d;
     return nullptr;
 }
@@ -667,6 +676,21 @@ __export void module_init()
     if(s_use_interrupt_bus)
         sp_interrupt_bus = (interrupt_bus*) s_dc.fp_get_device(DC_STD_ITB);
     s_mem = (memory*) s_dc.fp_get_device(DC_STD_MEM);
+    if(!std::filesystem::exists(s_bios_file_path))
+    {
+        WARN_M("Bios file: " << s_bios_file_path << " not found");
+    }
+    else
+    {
+        uint8_t* bios = new uint8_t[512];
+        std::ifstream bios_file(s_bios_file_path, std::ios::in | std::ios::binary);
+        if(file_size(s_bios_file_path) >= 512)
+            bios_file.read((char*) bios, 512);
+        else
+            bios_file.read((char*) bios, file_size(s_bios_file_path));
+        s_mem->fp_load_bios(bios);
+        delete bios;
+    }
     if(s_mem == nullptr)
         WARN_M("Memory is nullptr");
 }

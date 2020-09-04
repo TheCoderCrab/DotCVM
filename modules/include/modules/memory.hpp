@@ -22,6 +22,8 @@ struct memory
     uint32_t        data;
     bool            write;
     memory_mode     mode;
+
+    void (*fp_load_bios)(uint8_t* bios);
 };
 
 #endif /* DC_MEMORY_H */

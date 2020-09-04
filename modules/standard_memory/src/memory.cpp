@@ -2,7 +2,7 @@
 #include <dotcvm/utils/log.hpp>
 #include <modules/memory.hpp>
 #include <modules/io_bus.hpp>
-
+#include <memory.h>
 
 static dotcvm_data s_dc;
 
@@ -13,6 +13,11 @@ static uint32_t s_size;
 
 static bool s_use_io_bus = true;
 static io_bus*  sp_io_bus = nullptr;
+
+static void load_bios(uint8_t* bios)
+{
+    memcpy(s_data, bios, 512);
+}
 
 __export void module_report(uint additional_data0, uint additional_data1)
 {
@@ -46,7 +51,7 @@ __export device_ptr module_create_device(dotcvm_data d)
     s_instance->data = s_data[0]; // to be accurate
     s_instance->write = false;
     s_instance->mode = memory_mode::BYTE;
-
+    s_instance->fp_load_bios = load_bios;
 
     return s_instance;
 }
