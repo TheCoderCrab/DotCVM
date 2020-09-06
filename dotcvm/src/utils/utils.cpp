@@ -20,9 +20,9 @@ namespace utils
             home = std::string(getpwuid(getuid())->pw_dir);
         else
             home = std::string(getenv("HOME"));
-        if(!std::filesystem::exists(home + "/.dotcvm"))
-            std::filesystem::create_directory(home + "/.dotcvm");
-        return home + "/.dotcvm/";
+        if(!std::filesystem::exists(home + "/.local/share/dotcvm"))
+            std::filesystem::create_directory(home + "/.local/share/dotcvm");
+        return home + "/.local/share/dotcvm/";
 #endif
 #endif /* DEBUG */
     }
