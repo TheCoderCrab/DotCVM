@@ -96,7 +96,8 @@ enum instruction { NO_OP  = 0xFF,
                    LCPL = 0X60,
                    SCPL,
                    IN = 0X80,
-                   OUT };
+                   OUT 
+                   };
 
 static uint16_t s_opcode = 0XFF00;
 static instruction instr() { return (instruction)(s_opcode & 0x00FF); }
@@ -314,6 +315,11 @@ static std::string s_bios_file_path;
 
 #pragma region INSTRUCTIONS
 
+static void i_no_op()
+{
+    s_cycles = 0;
+}
+
 static void i_cpuinf()
 {
     if(arg0 == 0) // CPU vendor
@@ -474,7 +480,7 @@ static void i_iret()
                                    s_cycles = 0;\
                                }
 
-DEF_OPERATOR_INS(not , ~(arg0        ))
+DEF_OPERATOR_INS(not , ~(        arg1))
 DEF_OPERATOR_INS(or  ,  (arg0 |  arg1))
 DEF_OPERATOR_INS(and ,  (arg0 &  arg1))
 DEF_OPERATOR_INS(xor ,  (arg0 ^  arg1))
@@ -487,6 +493,9 @@ DEF_OPERATOR_INS(mul ,  (arg0 *  arg1))
 DEF_OPERATOR_INS(div ,  (arg0 /  arg1))
 DEF_OPERATOR_INS(sl  ,  (arg0 << arg1))
 DEF_OPERATOR_INS(sr  ,  (arg0 >> arg1))
+
+DEF_OPERATOR_INS(intg , (uint) uint_as_float( arg1))
+DEF_OPERATOR_INS(float, float_as_uint((float) arg1))
 
 DEF_OPERATOR_INS(fadd,  float_as_uint((uint_as_float(arg0) +  uint_as_float(arg1))));
 DEF_OPERATOR_INS(fsub,  float_as_uint((uint_as_float(arg0) -  uint_as_float(arg1))));
@@ -665,7 +674,7 @@ __export device_ptr module_create_device(dotcvm_data d)
 {
     DEBUG_M("Creating cpu");
     config c = d.fp_read_module_config("conf.cfg");
-    s_bios_file_path = d.fp_config_get_string(c, "bios_file", "files/bios.bin");
+    s_bios_file_path = d.fp_config_get_string(c, "bios_file", d.workdir + "/files/bios.bin");
     s_dc = d;
     return nullptr;
 }
@@ -813,6 +822,7 @@ __export void module_clock(uint c)
             switch (instr())
             {
 #define INSTRUCTION(i, f) case instruction::i: DEBUG_M("Instruction: " << #i << ", cycle: " << s_cycles); f(); return
+                INSTRUCTION(NO_OP   , i_no_op       );
                 INSTRUCTION(CPUINF  , i_cpuinf      );
                 INSTRUCTION(SET     , i_set         );
                 INSTRUCTION(PUSH4   , i_push<4>     );
@@ -850,6 +860,8 @@ __export void module_clock(uint c)
                 INSTRUCTION(FDIV    , i_fdiv        );
                 INSTRUCTION(SL      , i_sl          );
                 INSTRUCTION(SR      , i_sr          );
+                INSTRUCTION(INTG    , i_intg        );
+                INSTRUCTION(FLOAT   , i_float       );
                 INSTRUCTION(JMP     , i_jmp         );
                 INSTRUCTION(CALL    , i_call        );
                 INSTRUCTION(CMP     , i_cmp         );

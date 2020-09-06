@@ -7,8 +7,6 @@
 #include <cstdint>
 #include <dotcvm/dotcvm.hpp>
 
-#define MODULES_DIR "modules/"
-
 enum module_clock           { NEVER, FIRST, CPU, NORMAL, LAST, FIRST_CPU, FIRST_NORMAL, FIRST_LAST, CPU_LAST, NORMAL_LAST, ALL };
 enum module_connection_mode { AGREEMENT, ACCEPT_ALL, DECLINE_ALL };
 

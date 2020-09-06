@@ -26,7 +26,7 @@ struct dotcvm_data
     std::vector<ulong> (*fp_config_get_ulong_array)(config& c, std::string name, ulong default_value);
     std::vector<long int> (*fp_config_get_long_array)(config& c, std::string name, long int default_value);
     std::vector<std::string> (*fp_config_get_string_array)(config& c, std::string name, std::string default_value);
-
+    std::string workdir;
 };
 
 #define DC_CONNECTION_INAGREEMENT       0x10

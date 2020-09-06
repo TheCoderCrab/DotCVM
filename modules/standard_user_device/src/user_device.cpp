@@ -23,13 +23,13 @@ static io_bus*  sp_io_bus = nullptr;
 static bool s_use_interrupt_bus = true;
 static interrupt_bus* sp_interrupt_bus = nullptr;
 
-static uint s_last_key = 0;
+static uint s_last_key    = 0;
 static uint s_last_button = 0;
-static uint s_mouse_x = 0;
-static uint s_mouse_y = 0;
+static uint s_mouse_x     = 0;
+static uint s_mouse_y     = 0;
 
-static uint s_screen_x = 0;
-static uint s_screen_y = 0;
+static uint s_screen_x    = 0;
+static uint s_screen_y    = 0;
 static uint s_screen_rgba = 0;
 
 static std::vector<interrupt_data> s_interrupt_queue;

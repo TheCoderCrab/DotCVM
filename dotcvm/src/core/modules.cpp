@@ -2,11 +2,13 @@
 #include <dotcvm/utils/log.hpp>
 #include <dotcvm/utils/config.hpp>
 #include <dotcvm/utils/string.hpp>
+#include <dotcvm/utils/utils.hpp>
 #include <dotcvm/main.hpp>
 #include <vector>
 #include <filesystem>
 #include <dlfcn.h>
 #include <sstream>
+
 
 device_ptr get_device(uint);
 
@@ -39,7 +41,8 @@ static dotcvm_data s_dotcvm_data =
     .fp_config_get_int_array = config_get_int_array,
     .fp_config_get_ulong_array = config_get_ulong_array,
     .fp_config_get_long_array = config_get_long_array,
-    .fp_config_get_string_array = config_get_string_array
+    .fp_config_get_string_array = config_get_string_array,
+    .workdir = utils::get_workdir()
 };
 
 static void remove_modules(std::vector<module*>& modules_to_remove)
@@ -55,6 +58,11 @@ static void remove_modules(std::vector<module*>& modules_to_remove)
                 i--;
             }
     modules_to_remove.clear();
+}
+
+static std::string get_modules_dir()
+{
+    return utils::get_workdir() + "modules/";
 }
 
 static bool module_exist(uint id)
@@ -99,10 +107,10 @@ static bool module_connect_to(uint id0, uint id1)
 void load_modules()
 {
     std::vector<module_report> modules_reports;
-    if(!std::filesystem::exists(MODULES_DIR))
-        std::filesystem::create_directory(MODULES_DIR);
+    if(!std::filesystem::exists(get_modules_dir()))
+        std::filesystem::create_directory(get_modules_dir());
     uint uid_count = 0;
-    for(auto& entry : std::filesystem::directory_iterator(MODULES_DIR))
+    for(auto& entry : std::filesystem::directory_iterator(get_modules_dir()))
         if(entry.is_directory() && std::filesystem::exists(entry.path().string().append("/device.dpf")))
         {
             s_modules.push_back(module{.module_folder = entry.path().string(), .uid = uid_count, .config = read_config_file(entry.path().string().append("/device.dpf"))});
