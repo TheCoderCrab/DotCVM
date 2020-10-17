@@ -5,6 +5,7 @@
 #include <string>
 #include <dotcvm/utils/config.hpp>
 
+
 typedef void* device_ptr;
 
 struct dotcvm_data
@@ -33,5 +34,25 @@ struct dotcvm_data
 #define DC_CONNECTION_INEXISTANT        0x20
 
 #define __export extern "C"
+
+#ifdef DCVM_MODULE_NAME
+#define __SET__MODULE__NAME__(n) std::string module_name_##n = #n
+#define _SET_MODULE_NAME_(n) __SET__MODULE__NAME__(n)
+_SET_MODULE_NAME_(DCVM_MODULE_NAME);
+#undef __SET__MODULE__NAME__
+#undef _SET_MODULE_NAME_
+#else
+#ifndef DOTCVM
+#error "DCVM_MODULE_NAME should be defined befor including dotcvm/dotcvm.hpp"
+#endif
+#endif
+
+#define __DCVM_MODULE_INFO(n, t, i, v) t module_##i_##n = v
+#define _DCVM_MODULE_INFO(n, t, i, v) _DCVM_MODULE_INFO(n, t, i, v)
+
+#define DCVM_MODULE_AUTHOR(a) _DCVM_MODULE_INFO(DCVM_MODULE_NAME, std::string, author, a)
+
+#undef __DCVM_MODULE_INFO
+#undef _DCVM_MODULE_INFO
 
 #endif /* DC_DOTCVM_H */
